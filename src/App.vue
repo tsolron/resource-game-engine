@@ -13,8 +13,15 @@
 </template>
 
 <script>
+import Game from './Game.js'
+import Common from './Common.js'
+import {FnF} from './Fn.js'
+import Exchange from './Exchange.js'
+import {TriggerList, TFactory} from './Trigger.js'
+import Feature from './Feature.js'
+import {ResourceFactory} from './data/Resource.js'
+
 import ResCore from './ResCore'
-import Resource from './data/Resource.js'
 import Action from './data/Action.js'
 import ActionList from './data/ActionList.js'
 //import Option from './data/Option.js'
@@ -27,6 +34,49 @@ export default {
     ResCore
   },
   data () {
+    let game = new Game();
+
+    let common = new Common();
+    common.add('globalProductionMult', FnF('1') );
+    game.common = common;
+
+
+    let features = new Map();
+    let simpleFeatures = ['catnip', 'wood', 'science'];
+    features.set('simple', FeatureFactory('simple', true, simpleFeatures));
+    let catnipActiveXMap = new Map([['catnip', FnF('1')]]);
+    let catnipActiveX = new Exchange(catnipActiveXMap);
+    resources.set('catnip', ResourceFactory(game, 'catnip', 0, true, {influencers:[], passive:null, active:catnipActiveX}));
+    let woodActiveXMap = new Map([['catnip', FnF('1')], ['wood', FnF('-50')]]);
+    let woodActiveX = new Exchange(woodActiveXMap);
+    resources.set('wood', ResourceFactory(game, 'wood', 0, false, {influencers:[], passive:null, active:woodActiveX}));
+    resources.set('science', ResourceFactory(game, 'science', 0, false, {influencers:['library'], passive:null, active:null}));
+
+    let structureFeatures = ['field', 'library'];
+    features.set('structure', FeatureFactory('structure', true, structureFeatures));
+    let fieldPassiveXMap = new Map([['catnip', FnF('this.quantity')]]);
+    let fieldPassiveX = new Exchange(fieldPassiveXMap);
+    resources.set('field', ResourceFactory(game, 'field', 0, false, {influencers:['field'], passive:fieldPassiveX, active:null}));
+    resources.set('library', ResourceFactory(game, 'field', 0, false, {influencers:['field'], passive:fieldPassiveX, active:null}));
+
+    let researchFeatures = [];
+    features.set('research', FeatureFactory('science', false, researchFeatures));
+
+
+    game.resources = resources;
+    game.features = features;
+
+
+    let triggerList = new TriggerList();
+    triggerList.add(TFactory(game, 'onFirstCatnip10', 'once', {condition: 'game.resources.get("catnip").quantity > 10', action: 'game.resources.get("field").unlock();'}));
+    triggerList.add(TFactory(game, 'onFirstCatnip50', 'once', {condition: 'game.resources.get("catnip").quantity > 50', action: 'game.resources.get("wood").unlock();'}));
+    triggerList.add(TFactory(game, 'onFirstWood10', 'once', {condition: 'game.resources.get("wood").quantity > 10', action: 'game.resources.get("library").unlock();'}));
+    triggerList.add(TFactory(game, 'onFirstLibrary1', 'once', {condition: 'game.resources.get("library").quantity > 0', action: 'game.resources.get("science").unlock(); game.features.get("research").unlock();'}));
+    game.triggers = triggerList;
+
+
+
+    //RGE ENDS HERE
     let alTemp = new ActionList(10);
     let resList = new Map();
     let opList = [];
