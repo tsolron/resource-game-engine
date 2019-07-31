@@ -20,11 +20,9 @@ import Exchange from './Exchange.js'
 import {TriggerList, TFactory} from './Trigger.js'
 import Feature from './Feature.js'
 import {ResourceFactory} from './data/Resource.js'
+import {Action, ActionList} from './data/Action.js'
 
 import ResCore from './ResCore'
-import Action from './data/Action.js'
-import ActionList from './data/ActionList.js'
-//import Option from './data/Option.js'
 import {OptionFactory} from './data/Option.js';
 import Math from './lib/math.js'
 
@@ -34,8 +32,20 @@ export default {
     ResCore
   },
   data () {
+    //TODO: Move this setup code to a separate initialization method or file
     let game = new Game();
+    game.actions = new ActionList(10);
 
+    let catnipActiveXMap = new Map([['catnip', FnF('1')]]);
+    let catnipActiveX = new Exchange(catnipActiveXMap);
+    game.resources.set('catnip', ResourceFactory(game, 'catnip', 0, true, {influencers:[], passive:null, active:catnipActiveX}));
+
+    let woodActiveXMap = new Map([['wood', FnF('1')], ['catnip', FnF('-50')]]);
+    let woodActiveX = new Exchange(woodActiveXMap);
+    game.resources.set('wood', ResourceFactory(game, 'wood', 0, false, {influencers:[], passive:null, active:woodActiveX}));
+
+    game.features.set('simple', FeatureFactory('simple', true, ['catnip', 'wood']));
+/*
     let common = new Common();
     common.add('globalProductionMult', FnF('1') );
     game.common = common;
@@ -50,14 +60,16 @@ export default {
     let woodActiveXMap = new Map([['catnip', FnF('1')], ['wood', FnF('-50')]]);
     let woodActiveX = new Exchange(woodActiveXMap);
     resources.set('wood', ResourceFactory(game, 'wood', 0, false, {influencers:[], passive:null, active:woodActiveX}));
-    resources.set('science', ResourceFactory(game, 'science', 0, false, {influencers:['library'], passive:null, active:null}));
+    resources.set('science', ResourceFactory(game, 'science', 0, false, {influencers:['library'], passive:null, active:null, buff:FnF('1+(game.resources["library"]*0.3)')}));
 
     let structureFeatures = ['field', 'library'];
     features.set('structure', FeatureFactory('structure', true, structureFeatures));
     let fieldPassiveXMap = new Map([['catnip', FnF('this.quantity')]]);
     let fieldPassiveX = new Exchange(fieldPassiveXMap);
     resources.set('field', ResourceFactory(game, 'field', 0, false, {influencers:['field'], passive:fieldPassiveX, active:null}));
-    resources.set('library', ResourceFactory(game, 'field', 0, false, {influencers:['field'], passive:fieldPassiveX, active:null}));
+    let libraryActiveXMap = new Map([['library', FnF('1')],['wood', FnF('10*Math.pow(1.2,self.quantity)')]]);
+    let libraryActiveX = new Exchange(libraryActiveXMap);
+    resources.set('library', ResourceFactory(game, 'field', 0, false, {influencers:['field'], passive:null, active:libraryActiveX}));
 
     let researchFeatures = [];
     features.set('research', FeatureFactory('science', false, researchFeatures));
@@ -74,14 +86,15 @@ export default {
     triggerList.add(TFactory(game, 'onFirstLibrary1', 'once', {condition: 'game.resources.get("library").quantity > 0', action: 'game.resources.get("science").unlock(); game.features.get("research").unlock();'}));
     game.triggers = triggerList;
 
-
-
     //RGE ENDS HERE
-    let alTemp = new ActionList(10);
-    let resList = new Map();
-    let opList = [];
+*/
+
+
+    //let alTemp = new ActionList(10);
+    //let resList = new Map();
+    //let opList = [];
     /* Resource(name, quantity, isComposite, isStructure, base_resources_per_tick) */
-    resList.set('entropy', new Resource('entropy', resList));
+/*    resList.set('entropy', new Resource('entropy', resList));
     resList.get('entropy').selfRPT = 0;
     resList.set('energy', new Resource('energy', resList));
     resList.set('mass', new Resource('mass', resList));
@@ -92,40 +105,10 @@ export default {
     resList.get('factory').isStructure = true;
     resList.get('factory').baseRPT = [{name:'mass',quantity:1}];
     resList.get('factory').cost = [{name:'mass',quantity:10}];
+*/
 
-
-    /*let fg = "1";
-    let fc = "10";
-    let fr = "null";
-    let op = new Option(fg, fc, fr);
-    opList.push(op);
-    op.recalculate(resList);*/
-    //let params = {gain:'1', cost:'10', req:'null'};
-    let params = {type:'1resperclick', res:'entropy'};
-    let op = OptionFactory(resList, params);
-    //let op = OptionFactory(resPool, {gain:"1",cost:"10",req:"null"});
-    //opList.push(op);
-    //Math.evaluate(f);
-    //return eval('let a = 3; console.log(eval("a * 2"));');
-
-    /*
-    IDEAS
-* Split income into (onTick and onClick)
-*** onTick recalculates every tick (or every n ticks)
-* * * * (only increases) vs (conversion)
-*** onClick recalculates every click
-* Each onClick / button corresponds to a single **Option**
-* **Option** is static once made, but may be updated
-
-*Option*
-*** name/id (string or integer)
-*** gain (n-array of [name,quantity])
-*** cost
-*** requirement (same as previous, but not subtracted)
-*** rate_of_increase functions (may require Resource levels/quantity as parameters)
-    */
     return {
-      resPool: resList,
+      game: game,
       actionList: alTemp,
       options: opList,
       gameTicker: null,

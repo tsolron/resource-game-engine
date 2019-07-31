@@ -9,13 +9,6 @@ export default class Exchange {
   //set f(f) { this._f = f; }
 
   recalculate(game) {
-    let myMap = new Map([['c',3], ['w',5]]);
-    let it = myMap.entries();
-    // LOOP
-    let me = it.next();
-    console.log(me.values[0]);
-    // AFTER ALL, me.values === 'undefined'
-
     this.hasCost = false;
     let temp = this.list.entries();
     for (let value of temp) {
@@ -31,22 +24,23 @@ export default class Exchange {
 
   once(game) {
     if (!this.hasCost) {
-      doExchange(null, null);
+      doExchange(game, {});
     } else {
-      if (canExchange(null, null)) {
-        doExchange(null, null);
+      if (canExchange(game, {})) {
+        doExchange(game, {});
       }
     }
   }
-  something(game, eType, repeat, buff, nerf) {
+  multi(game, eType, repeat, args) {
     //TODO: Implement method
     //TODO: Incorporation of buff, nerf
   }
-  canExchange(buff, nerf) {
+  canExchange(game, args) {
     //TODO: Implement method
+    //TODO: Incorporation of buff, nerf
     return true;
   }
-  doExchange(buff, nerf) {
+  doExchange(game, args) {
     //TODO: Implement buff/nerf
     for (let value of this.list.entries()) {
       game.resources.set(value[0], game.resources.get(value[0]) + value[1]);

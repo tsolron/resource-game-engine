@@ -1,64 +1,64 @@
 export default class Action {
-  constructor(t, g, c, n) {
+  constructor(t, e) {
     this.timeTick = t;
-    this.gain = g;
-    this.actualGain = null; // TODO: For undoing actions accurately
-    this.cost = c;
-    // TODO: Hard coded for now
-    this.repeat = 1;
-    this.state = 'new';
+    this.exchange = e;
   }
 
-  validateProcess(resPool) {
-    let result = true;
-    this.cost.forEach(r => {
-      if (!resPool.get(r.name).testAddMin(-r.quantity * this.repeat)) {
-        result = false;
-      }
-    });
-
-    return result;
+  validateDo(game) {
+    return this.exchange.canExchange(game, {});
   }
 
-  process(resPool) {
-    if (this.validateProcess(resPool)) {
-      this.cost.forEach(r => {
-        resPool.get(r.name).add(-r.quantity * this.repeat);
-      });
-      this.gain.forEach(r => {
-        resPool.get(r.name).add(r.quantity * this.repeat);
-      });
-      this._state = 'complete';
-    }
-    else {
-      this._state = 'cancelled';
+  do(game) {
+    if (this.validateDo(game, {})) {
+      this.exchange.doExchange(game, {});
     }
   }
 
-  validateUndo(resPool) {
-    let result = true;
-    this.gain.forEach(r => {
-      if (!resPool.get(r.name).testAddMin(-r.quantity * this.repeat)) {
-        result = false;
-      }
-    });
-
-    return result;
+  validateUndo(game) {
+    return this.exchange.canExchange(game, {});
   }
 
   // TODO: Not up to date
-  undo(resPool) {
-    if (this.validateUndo(resPool)) {
-      this.gain.forEach(r => {
-        resPool.get(r.name).add(-r.quantity * this.repeat);
-      });
-      this.cost.forEach(r => {
-        resPool.get(r.name).add(r.quantity * this.repeat);
-      });
-      this._state = 'undone';
-    }
-    else {
-      this._state = 'cancelled';
+  undo(game) {
+    if (this.validateUndo(game)) {
+      this.exchange.doExchange(game, {});
     }
   }
 };
+
+export class ActionList {
+  constructor(n) {
+    this.act_list = [];
+    this.past_actions = [];
+    this.max_history = n;
+  }
+
+  runNextAction(resPool) {
+    if (this.act_list.length == 0) {
+      return;
+    }
+    this.cur_act = this.act_list.shift();
+    this.cur_act.do(resPool);
+    this.past_actions.push(this.cur_act);
+    if (this.past_actions.length > this.max_history) {
+      this.past_actions.shift();
+    }
+  }
+
+  rollbackPreviousAction(resPool) {
+    if (this.past_actions.length == 0) {
+      return;
+    }
+    this.cur_act = this.past_actions.pop();
+    this.cur_act.undo(resPool);
+    //this.act_list.unshift(this.cur_act);
+  }
+
+  addAction(act) {
+    this.act_list.push(act);
+  }
+
+  cancelLastAction() {
+    this.act_list.pop();
+  }
+}
