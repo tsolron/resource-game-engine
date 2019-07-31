@@ -1,9 +1,21 @@
+/**
+ * TODO functions
+ * @type {class}
+ * @param {string} n Used to set name
+ * @param {Boolean} u Used to set isUnlocked
+ * @property {string} name
+ * @property {Boolean} isUnlocked
+ * @property {Array.<string>} list Array of 'resource'
+ * @property {Fn} buff
+ * @property {Fn} nerf
+ */
 export default class Feature {
   constructor(n, u) {
     this.name = n;
     this.isUnlocked = u;
     this.list = [];
-    this.multiplier = null; // Fn
+    this.buff = null; // Fn
+    this.nerf = null; // Fn
   }
 
   unlock() {
@@ -20,6 +32,13 @@ export default class Feature {
   }
 }
 
+/**
+ * @type {function}
+ * @param {string} n Used to set name
+ * @param {Boolean} u Used to set isUnlocked
+ * @param {Array.<string>} l Used to set list
+ * @constructor
+ */
 export function FeatureFactory(n, u, l)
 {
   let feature = new Feature(n, u);

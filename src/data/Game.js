@@ -1,10 +1,12 @@
 /**
  * This class contains all game data.
- * @param {Common} common
- * @param {TriggerList} triggers
- * @param {ActionList} Actions
- * @param {Map.<string, Feature>} features
- * @param {Map.<string, Resource>} resources
+ * @class Game
+ * @type {class}
+ * @property {Common} common
+ * @property {TriggerList} triggers
+ * @property {ActionList} actions
+ * @property {Map.<string, Feature>} features
+ * @property {Map.<string, Resource>} resources
  */
 export default class Game {
   constructor() {

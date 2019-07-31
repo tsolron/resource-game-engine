@@ -1,11 +1,36 @@
+import {Fn, FnF} from './Fn.js';
+import {Exchange} from './Exchange.js';
+
+/**
+ * TODO functions
+ * @type {class}
+ * @param {Game} game
+ * @param {string} n Used to set name
+ * @param {Number} q Used to set quantity
+ * @param {Boolean} u Used to set isUnlocked
+ * @property {string} name
+ * @property {Number} quantity
+ * @property {Boolean} isUnlocked
+ * @property {Array.<string>} influencers
+ * @property {FnF} min
+ * @property {FnF} max
+ * @property {Exchange} passive
+ * @property {Exchange} active
+ * @property {Exchange} requirement
+ * @property {Fn} buff
+ * @property {Fn} nerf
+ * @property {Boolean} isAssigned
+ * @property {string} assignedBy
+ * @property {Number} numAssigned
+ */
 export default class Resource {
-  constructor(n, q, u) {
-    this.name = n;
+  constructor(game, n, q, u) {
+    this.name = Number(n);
     this.quantity = q;
     this.isUnlocked = u;
     this.influencers = [];
-    this.min = new Fn(0);
-    this.max = new Fn(Infinity);
+    this.min = FnF(game, '0');
+    this.max = FnF(game, 'Infinity');
     this.passive = null; // Exchange
     this.active = null; // Exchange
     this.requirement = null; // Exchange, for self.active, does not modify resources
@@ -51,9 +76,20 @@ export default class Resource {
   }
 }
 
+/**
+ * TODO functions and args
+ * @type {function}
+ * @param {Game} game
+ * @param {string} n Used to set name
+ * @param {Number} q Used to set quantity
+ * @param {Boolean} u Used to set isUnlocked
+ * @param {Object} args [description]
+ * @return {Resource}
+ * @constructor
+ */
 export function ResourceFactory(game, n, q, u, args)
 {
-  let res = new Resource(n, q, u);
+  let res = new Resource(game, n, q, u);
   if (typeof args['influencers'] !== "undefined") {
     res.influencers = args['influencers'];
   }

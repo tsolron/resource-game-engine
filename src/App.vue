@@ -8,42 +8,47 @@
       <button @click="start">Start / Resume</button>
     </div>
     <hr>
-    <ResCore v-for="thisRes in resPoolArr" v-bind="thisRes" v-bind:resPool="resPool" v-on:doCraft="doCraft"></ResCore>
+    <h1>Catnip : {{game.resources.get('catnip').quantity}}</h1>
+    <h1>Catnip Min : {{game.resources.get('catnip').min.n}}</h1>
+    <h1>Catnip Max : {{game.resources.get('catnip').max.n}}</h1>
+    <!--<ResCore v-for="thisRes in resPoolArr" v-bind="thisRes" v-bind:resPool="resPool" v-on:doCraft="doCraft"></ResCore>-->
   </div>
 </template>
 
 <script>
-import Game from './Game.js'
-import Common from './Common.js'
-import {FnF} from './Fn.js'
-import Exchange from './Exchange.js'
-import {TriggerList, TFactory} from './Trigger.js'
-import Feature from './Feature.js'
+import Game from './data/Game.js'
+//import Common from './data/Common.js'
+import {Fn, FnF} from './data/Fn.js'
+import Exchange from './data/Exchange.js'
+//import {TriggerList, TFactory} from './data/Trigger.js'
+//import Feature from './data/Feature.js'
 import {ResourceFactory} from './data/Resource.js'
 import {Action, ActionList} from './data/Action.js'
 
-import ResCore from './ResCore'
-import {OptionFactory} from './data/Option.js';
+//import FSimple from './FSimple'
 
 export default {
   name: 'app',
   components: {
-    ResCore
+    //FSimple
   },
   data () {
     //TODO: Move this setup code to a separate initialization method or file
     let game = new Game();
     game.actions = new ActionList(10);
 
-    let catnipActiveXMap = new Map([['catnip', FnF('1')]]);
+    //let abc = FnF(game, '1');
+    //let abc = FnF(game, '1');
+
+    let catnipActiveXMap = new Map([['catnip', FnF(game, '1')]]);
     let catnipActiveX = new Exchange(catnipActiveXMap);
     game.resources.set('catnip', ResourceFactory(game, 'catnip', 0, true, {influencers:[], passive:null, active:catnipActiveX}));
 
-    let woodActiveXMap = new Map([['wood', FnF('1')], ['catnip', FnF('-50')]]);
-    let woodActiveX = new Exchange(woodActiveXMap);
-    game.resources.set('wood', ResourceFactory(game, 'wood', 0, false, {influencers:[], passive:null, active:woodActiveX}));
+    //let woodActiveXMap = new Map([['wood', FnF('1')], ['catnip', FnF('-50')]]);
+    //let woodActiveX = new Exchange(woodActiveXMap);
+    //game.resources.set('wood', ResourceFactory(game, 'wood', 0, false, {influencers:[], passive:null, active:woodActiveX}));
 
-    game.features.set('simple', FeatureFactory('simple', true, ['catnip', 'wood']));
+    //game.features.set('simple', FeatureFactory('simple', true, ['catnip', 'wood']));
 /*
     let common = new Common();
     common.add('globalProductionMult', FnF('1') );
@@ -108,8 +113,6 @@ export default {
 
     return {
       game: game,
-      actionList: alTemp,
-      options: opList,
       gameTicker: null,
       timeTick: 0,
       tickspersecond: 20,
@@ -126,15 +129,15 @@ export default {
     gameLoop: function() {
       if ((!this.paused) || (this.paused && this.slowTick > 0)) {
         this.timeTick++;
-        this.slowTick = Math.max(0, --this.slowTick);
-        this.resPool.forEach(function (thisRes,name) {
+        //this.slowTick = Math.max(0, --this.slowTick);
+        /*this.resPool.forEach(function (thisRes,name) {
           thisRes.tick(1);
-        });
-        this.actionList.runNextAction(this.resPool);
+        });*/
+        this.game.actions.runNextAction(this.game);
       }
     },
     tryUndo: function() {
-      this.actionList.rollbackPreviousAction(this.resPool);
+      this.actionList.rollbackPreviousAction(this.game);
     },
     pause: function() {
       this.paused = true;
@@ -154,6 +157,9 @@ export default {
   computed: {
     resPoolArr: function() {
       return Array.from(this.resPool.values());
+    },
+    catnip: function() {
+      return this.game.resources.get('catnip').quantity;
     }
   },
   mounted: function() {

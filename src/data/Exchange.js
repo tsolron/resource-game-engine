@@ -1,12 +1,19 @@
+import {Fn, FnF} from './Fn.js';
+
+/**
+ * TODO functions
+ * @type {class}
+ * @param {Map.<string, Fn>} l Used to set list
+ * @property {Map.<string, Fn>} list Map of costs/gains ['resource', Fn]
+ * @property {Map.<string, Number>} listc Result of list with Fn's eval'd
+ * @property {Boolean} hasCost
+ */
 export default class Exchange {
-  constructor(resList) {
-    this.list = resList; // Map('resource', Fn)
+  constructor(l) {
+    this.list = l;
     this.listc = [];
     this.hasCost = true;
   }
-
-  //get f() { return this._f; }
-  //set f(f) { this._f = f; }
 
   recalculate(game) {
     this.hasCost = false;

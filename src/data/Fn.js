@@ -1,7 +1,13 @@
+/**
+ * TODO functions
+ * @type {class}
+ * @property {string} f
+ * @property {Number} n
+ */
 export default class Fn {
   constructor() {
-    this.n = 1;
     this._f = null;
+    this.n = 1;
   }
 
   get f() { return this._f; }
@@ -13,9 +19,14 @@ export default class Fn {
     //Math.evaluate(f);
     //return eval('let a = 3; console.log(eval("a * 2"));');
   }
-}
+};
 
-export function FnF(f)
+/**
+ * @type {function}
+ * @param {Game} game
+ * @param {string} f
+ */
+export function FnF(game, f)
 {
   let fn = new Fn();
   fn.f = f;
