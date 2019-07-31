@@ -41,12 +41,13 @@ export default class Resource {
   }
 
   recalcPA(game, rlist) {
-    foreach (r in list) {
+    //TODO: Implement
+    /*foreach (r in list) {
       if (this.influencers.includes(r)) {
         this.passive.recalculate(game);
         this.active.recalculate(game);
       }
-    }
+    }*/
   }
 }
 

@@ -1,7 +1,7 @@
 {
-  "name": "testing",
-  "description": "A Vue.js project",
-  "version": "1.0.0",
+  "name": "resource-game-engine",
+  "description": "An incremental game engine",
+  "version": "0.1.0",
   "author": "tsolron <tsolron@gmail.com>",
   "license": "MIT",
   "private": true,

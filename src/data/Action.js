@@ -26,6 +26,9 @@ export default class Action {
   }
 };
 
+/**
+ * This class manages Actions
+ */
 export class ActionList {
   constructor(n) {
     this.act_list = [];

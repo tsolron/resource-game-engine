@@ -11,7 +11,7 @@ export default class Feature {
   }
 
   addResource(n) {
-    if (this.list.includes(n) {
+    if (this.list.includes(n)) {
       // Cannot add, already in list
       return false;
     } else {

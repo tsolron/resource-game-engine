@@ -20,24 +20,24 @@ export default class Trigger {
 
 export function TFactory(game, n, t, args)
 {
-  let t = new Trigger(n, t);
+  let tri = new Trigger(n, t);
   if (typeof args['condition'] !== "undefined") {
-    t.condition = args['condition'];
+    tri.condition = args['condition'];
   }
   if (typeof args['action'] !== "undefined") {
-    t.action = args['action'];
+    tri.action = args['action'];
   }
-  return t;
-};
+  return tri;
+}
 
 export class TriggerList {
   constructor() {
-    this.waitingTriggers = {};
-    this.expiredTriggers = {};
+    this.waitingTriggers = new Map();
+    this.expiredTriggers = new Map();
   }
 
-  get f() { return this._f; }
-  set f(f) { this._f = f; }
+  //get f() { return this._f; }
+  //set f(f) { this._f = f; }
 
   add(t) {
     if (this.expiredTriggers.has(t.name)) {
@@ -50,7 +50,7 @@ export class TriggerList {
     }
 
     // Create code
-    this.waitingTriggers.set(t.name) = t;
+    this.waitingTriggers.set(t.name, t);
   }
 
   check(game) {

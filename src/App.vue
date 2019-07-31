@@ -24,7 +24,6 @@ import {Action, ActionList} from './data/Action.js'
 
 import ResCore from './ResCore'
 import {OptionFactory} from './data/Option.js';
-import Math from './lib/math.js'
 
 export default {
   name: 'app',
