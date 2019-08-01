@@ -12,26 +12,38 @@ export default class Action {
     this.exchange = e;
   }
 
-  validateDo(game) {
+  _validateDo(game) {
     return this.exchange.canExchange(game, {});
   }
 
   do(game) {
-    if (this.validateDo(game, {})) {
-      this.exchange.doExchange(game, {});
+    if (this._validateDo(game, {})) {
+      this.exchange.once(game, {});
+      game.time.recalculateAll(game);
     }
   }
 
-  validateUndo(game) {
+  _validateUndo(game) {
     return this.exchange.canExchange(game, {});
   }
 
   // TODO: Not up to date
   undo(game) {
-    if (this.validateUndo(game)) {
+    if (this._validateUndo(game)) {
       this.exchange.doExchange(game, {});
     }
   }
+};
+
+/**
+ * @type {function}
+ * @param {Game} game
+ * @param {string} f
+ */
+export function ActionFactory(game, t, e)
+{
+  let act = new Action(t, e);
+  return act;
 };
 
 /**
@@ -67,11 +79,14 @@ export class ActionList {
     }
     let cur_act = this.past_actions.pop();
     cur_act.undo(game);
-    //this.act_list.unshift(this.cur_act);
   }
 
   addAction(act) {
     this.act_list.push(act);
+  }
+
+  addActionByName(game, n) {
+    this.act_list.push(ActionFactory(game, game.time.timeTick, game.resources.get(n).active));
   }
 
   cancelLastAction() {

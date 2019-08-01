@@ -1,29 +1,30 @@
 <template>
   <div id="app">
-    <h1>Tick Number : {{ this.timeTick }}</h1>
+    <h1>timeTick : {{ timeTick }}</h1>
     <div>
-      <button @click="tryUndo">Undo Last Action</button>
+      <button>Undo</button>
       <button @click="pause">Pause</button>
-      <button @click="slowTick++;">Slow Tick</button>
-      <button @click="start">Start / Resume</button>
+      <button @click="start">Play</button>
     </div>
     <hr>
-    <h1>Catnip : {{game.resources.get('catnip').quantity}}</h1>
-    <h1>Catnip Min : {{game.resources.get('catnip').min.n}}</h1>
-    <h1>Catnip Max : {{game.resources.get('catnip').max.n}}</h1>
+    <h1>Catnip : {{game.resources.get('catnip').quantity.toFixed(2)}} <button @click="doCatnip">Gather Catnip</button></h1>
+    <h1>Wood : {{game.resources.get('wood').quantity}} <button @click="doWood">Refine Catnip</button></h1>
+    <h1>Field : {{game.resources.get('field').quantity}} <button @click="doField">Buy Field</button></h1>
+
     <!--<ResCore v-for="thisRes in resPoolArr" v-bind="thisRes" v-bind:resPool="resPool" v-on:doCraft="doCraft"></ResCore>-->
   </div>
 </template>
 
 <script>
 import Game from './data/Game.js'
+import Time from './data/Time.js'
 //import Common from './data/Common.js'
 import {Fn, FnF} from './data/Fn.js'
 import Exchange from './data/Exchange.js'
 //import {TriggerList, TFactory} from './data/Trigger.js'
-//import Feature from './data/Feature.js'
+import {FeatureFactory} from './data/Feature.js'
 import {ResourceFactory} from './data/Resource.js'
-import {Action, ActionList} from './data/Action.js'
+import {ActionFactory, ActionList} from './data/Action.js'
 
 //import FSimple from './FSimple'
 
@@ -35,20 +36,32 @@ export default {
   data () {
     //TODO: Move this setup code to a separate initialization method or file
     let game = new Game();
+    game.time = new Time(50);
     game.actions = new ActionList(10);
 
-    //let abc = FnF(game, '1');
-    //let abc = FnF(game, '1');
+    game.features.set('simple', FeatureFactory('simple', true, ['catnip', 'wood']));
+    game.features.set('structure', FeatureFactory('structure', true, ['field']));
 
+    // Catnip
     let catnipActiveXMap = new Map([['catnip', FnF(game, '1')]]);
     let catnipActiveX = new Exchange(catnipActiveXMap);
     game.resources.set('catnip', ResourceFactory(game, 'catnip', 0, true, {influencers:[], passive:null, active:catnipActiveX}));
 
-    //let woodActiveXMap = new Map([['wood', FnF('1')], ['catnip', FnF('-50')]]);
-    //let woodActiveX = new Exchange(woodActiveXMap);
-    //game.resources.set('wood', ResourceFactory(game, 'wood', 0, false, {influencers:[], passive:null, active:woodActiveX}));
+    // Wood
+    let woodActiveXMap = new Map([['wood', FnF(game, '1')], ['catnip', FnF(game, '-3')]]);
+    let woodActiveX = new Exchange(woodActiveXMap);
+    game.resources.set('wood', ResourceFactory(game, 'wood', 0, true, {influencers:[], passive:null, active:woodActiveX}));
 
-    //game.features.set('simple', FeatureFactory('simple', true, ['catnip', 'wood']));
+    // Field
+    let fieldPassiveXMap = new Map([['catnip', FnF(game, 'game.resources.get("field").qty * 0.125')]]);
+    let fieldPassiveX = new Exchange(fieldPassiveXMap);
+    let fieldActiveXMap = new Map([['field', FnF(game, '1')], ['catnip', FnF(game, '-10 * (Math.pow(1.2, game.resources.get("field").qty))')]]);
+    let fieldActiveX = new Exchange(fieldActiveXMap);
+    game.resources.set('field', ResourceFactory(game, 'field', 0, true, {influencers:[], passive:fieldPassiveX, active:fieldActiveX}));
+
+
+
+
 /*
     let common = new Common();
     common.add('globalProductionMult', FnF('1') );
@@ -93,78 +106,40 @@ export default {
     //RGE ENDS HERE
 */
 
-
-    //let alTemp = new ActionList(10);
-    //let resList = new Map();
-    //let opList = [];
-    /* Resource(name, quantity, isComposite, isStructure, base_resources_per_tick) */
-/*    resList.set('entropy', new Resource('entropy', resList));
-    resList.get('entropy').selfRPT = 0;
-    resList.set('energy', new Resource('energy', resList));
-    resList.set('mass', new Resource('mass', resList));
-    resList.get('mass').isComposite = true;
-    resList.get('mass').selfRPT = 0;
-    resList.get('mass').cost = [{name:'energy',quantity:10}];
-    resList.set('factory', new Resource('factory', resList));
-    resList.get('factory').isStructure = true;
-    resList.get('factory').baseRPT = [{name:'mass',quantity:1}];
-    resList.get('factory').cost = [{name:'mass',quantity:10}];
-*/
-
     return {
       game: game,
-      gameTicker: null,
-      timeTick: 0,
-      tickspersecond: 20,
-      paused: false,
-      slowTick: 0,
-      lastAutoRecalc: 0,
     }
   },
   methods: {
-    doCraft: function(res_name, n) {
-      let act = new Action(this.timeTick, this.resPool.get(res_name).getCraftGain(), this.resPool.get(res_name).cost, n);
-      this.actionList.addAction(act);
-    },
-    gameLoop: function() {
-      if ((!this.paused) || (this.paused && this.slowTick > 0)) {
-        this.timeTick++;
-        //this.slowTick = Math.max(0, --this.slowTick);
-        /*this.resPool.forEach(function (thisRes,name) {
-          thisRes.tick(1);
-        });*/
-        this.game.actions.runNextAction(this.game);
-      }
-    },
-    tryUndo: function() {
-      this.actionList.rollbackPreviousAction(this.game);
-    },
     pause: function() {
-      this.paused = true;
-      this.slowTick = 0;
-      //clearInterval(this.gameTicker);
+      this.game.time.pause();
     },
     start: function() {
-      this.paused = false;
-      //this.gameTicker = setInterval(this.gameLoop, 1000 / this.tickspersecond);
+      this.game.time.start(this.game);
     },
-    forceRecalc: function() {
-      this.options.forEach(function (o) {
-        o.recalculate(this.resPool);
-      });
+    doCatnip: function() {
+      this.game.actions.addAction(ActionFactory(this.game, this.timeTick, this.game.resources.get('catnip').active));
+    },
+    doWood: function() {
+      this.game.actions.addAction(ActionFactory(this.game, this.timeTick, this.game.resources.get('wood').active));
+    },
+    doField: function() {
+      //this.game.actions.addAction(ActionFactory(this.game, this.timeTick, this.game.resources.get('field').active));
+      this.game.actions.addActionByName(this.game, 'field');
     },
   },
   computed: {
-    resPoolArr: function() {
-      return Array.from(this.resPool.values());
-    },
     catnip: function() {
       return this.game.resources.get('catnip').quantity;
-    }
+    },
+    timeTick: function() {
+      return this.game.time.timeTick;
+    },
   },
-  mounted: function() {
-    this.start();
-    this.gameTicker = setInterval(this.gameLoop, 1000 / this.tickspersecond);
+  created: function() {
+    this.game.time.start(this.game);
+    this.game.time.recalculateAll(this.game);
+    this.game.time.gameLoop = setInterval(this.game.time.tick, (this.game.time.gameLoopInterval), this.game);
   },
 }
 </script>

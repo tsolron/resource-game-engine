@@ -30,6 +30,34 @@ export default class Feature {
       this.list.push(n);
     }
   }
+
+  doPassive(game) {
+    //array.forEach(item => console.log(item));
+    this.list.forEach(n => {if (!!game.resources.get(n).passive) {
+      game.resources.get(n).passive.once(game);
+    }});
+    /*for (n in this.list) {
+      if (game.resources.get(n).passive !== 'undefined') {
+        game.resources.get(n).passive.once(game);
+      }
+    }*/
+  }
+
+  recalculate(game) {
+    if (!!this.buff) {
+      this.buff.recalculate(game);
+    }
+    if (!!this.nerf) {
+      this.nerf.recalculate(game);
+    }
+  }
+
+  recalculateAll(game) {
+    this.recalculate(game);
+    for (let n of this.list) {
+      game.resources.get(n).recalculate(game);
+    }
+  }
 }
 
 /**

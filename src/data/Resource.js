@@ -11,7 +11,7 @@ import {Exchange} from './Exchange.js';
  * @property {string} name
  * @property {Number} quantity
  * @property {Boolean} isUnlocked
- * @property {Array.<string>} influencers
+ * @property {Array.<string>} influencers TODO: Need to implement
  * @property {FnF} min
  * @property {FnF} max
  * @property {Exchange} passive
@@ -41,8 +41,8 @@ export default class Resource {
     this.numAssigned = 0; // Number of self.quantity assigned to others
   }
 
-  //get f() { return this._f; }
-  //set f(f) { this._f = f; }
+  get qty() { return this.quantity; }
+  set qty(q) { this.quantity = q; }
 
   unlock() {
     this.isUnlocked = true;
@@ -65,14 +65,14 @@ export default class Resource {
     }
   }
 
-  recalcPA(game, rlist) {
-    //TODO: Implement
-    /*foreach (r in list) {
-      if (this.influencers.includes(r)) {
-        this.passive.recalculate(game);
-        this.active.recalculate(game);
-      }
-    }*/
+  recalculate(game) {
+    if (!!this.min) { this.min.recalculate(game); }
+    if (!!this.max) { this.max.recalculate(game); }
+    if (!!this.passive) { this.passive.recalculate(game); }
+    if (!!this.active) { this.active.recalculate(game); }
+    if (!!this.requirement) { this.requirement.recalculate(game); }
+    if (!!this.buff) { this.buff.recalculate(game); }
+    if (!!this.nerf) { this.nerf.recalculate(game); }
   }
 }
 

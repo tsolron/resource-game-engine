@@ -5,36 +5,29 @@ import {Fn, FnF} from './Fn.js';
  * @type {class}
  * @param {Map.<string, Fn>} l Used to set list
  * @property {Map.<string, Fn>} list Map of costs/gains ['resource', Fn]
- * @property {Map.<string, Number>} listc Result of list with Fn's eval'd
  * @property {Boolean} hasCost
  */
 export default class Exchange {
   constructor(l) {
     this.list = l;
-    this.listc = [];
     this.hasCost = true;
   }
 
   recalculate(game) {
     this.hasCost = false;
-    let temp = this.list.entries();
-    for (let value of temp) {
-      if (value !== 'undefined') {
-        let n = value[0];
-        let f = value[1];
-        let r = eval(f);
-        if (r < 0) { this.hasCost = true; }
-        this.listc.set(n, r);
-      }
-    }
+    this.list.forEach(fn => {
+      fn.recalculate(game);
+      if (fn.n < 0) { this.hasCost = true; }
+    });
   }
 
   once(game) {
+    //debugger;
     if (!this.hasCost) {
-      doExchange(game, {});
+      this.doExchange(game, {});
     } else {
-      if (canExchange(game, {})) {
-        doExchange(game, {});
+      if (this.canExchange(game, {})) {
+        this.doExchange(game, {});
       }
     }
   }
@@ -43,14 +36,19 @@ export default class Exchange {
     //TODO: Incorporation of buff, nerf
   }
   canExchange(game, args) {
-    //TODO: Implement method
     //TODO: Incorporation of buff, nerf
+    for (let value of this.list.entries()) {
+      if (game.resources.get(value[0]).quantity + value[1].n < game.resources.get(value[0]).min.n) {
+        return false;
+      }
+    }
     return true;
   }
   doExchange(game, args) {
     //TODO: Implement buff/nerf
+    //debugger;
     for (let value of this.list.entries()) {
-      game.resources.set(value[0], game.resources.get(value[0]) + value[1]);
+      game.resources.get(value[0]).quantity += value[1].n;
     }
   }
 }

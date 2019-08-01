@@ -10,6 +10,7 @@
  */
 export default class Game {
   constructor() {
+    this.time = null;
     this.common = null;
     this.triggers = null;
     this.actions = null;

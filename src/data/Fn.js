@@ -14,10 +14,8 @@ export default class Fn {
   set f(f) { this._f = f; }
 
   recalculate(game) {
-    let result = eval(this.f);
+    let result = Number(eval(this.f));
     this.n = result;
-    //Math.evaluate(f);
-    //return eval('let a = 3; console.log(eval("a * 2"));');
   }
 };
 
@@ -30,6 +28,5 @@ export function FnF(game, f)
 {
   let fn = new Fn();
   fn.f = f;
-  fn.recalculate(game);
   return fn;
 };
