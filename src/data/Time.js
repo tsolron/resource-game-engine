@@ -16,11 +16,11 @@ export default class Time {
     this.slowTick = 0;
   }
 
+  get tt() { return this.timeTick; }
   get gameLoopInterval() { return 10000 / this.ticksPerTenSeconds; }
 
   //Note: Since this is called within setInterval, "this" refers to Window not Time
   tick(game) {
-    //debugger;
     if ((!game.time.isPaused) || (game.time.isPaused && game.time.slowTick > 0)) {
       // Manage tick values
       game.time.timeTick++;

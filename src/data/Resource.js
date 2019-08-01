@@ -41,6 +41,8 @@ export default class Resource {
     this.numAssigned = 0; // Number of self.quantity assigned to others
   }
 
+  get displayQuantity() { return this.quantity.toFixed(2); }
+
   get qty() { return this.quantity; }
   set qty(q) { this.quantity = q; }
 

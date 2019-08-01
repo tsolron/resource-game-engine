@@ -86,7 +86,7 @@ export class ActionList {
   }
 
   addActionByName(game, n) {
-    this.act_list.push(ActionFactory(game, game.time.timeTick, game.resources.get(n).active));
+    this.addAction(ActionFactory(game, game.time.tt, game.r.get(n).active));
   }
 
   cancelLastAction() {

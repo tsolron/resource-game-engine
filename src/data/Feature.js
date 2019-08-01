@@ -14,6 +14,7 @@ export default class Feature {
     this.name = n;
     this.isUnlocked = u;
     this.list = [];
+    this.activeName = '';
     this.buff = null; // Fn
     this.nerf = null; // Fn
   }
@@ -67,9 +68,10 @@ export default class Feature {
  * @param {Array.<string>} l Used to set list
  * @constructor
  */
-export function FeatureFactory(n, u, l)
+export function FeatureFactory(n, u, l, an)
 {
   let feature = new Feature(n, u);
   feature.list = l;
+  feature.activeName = an;
   return feature;
 };

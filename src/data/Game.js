@@ -17,4 +17,7 @@ export default class Game {
     this.features = new Map();
     this.resources = new Map();
   }
+  // Shortcuts
+  get f() { return this.features; }
+  get r() { return this.resources; }
 }
