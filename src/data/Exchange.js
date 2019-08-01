@@ -46,9 +46,22 @@ export default class Exchange {
   }
   doExchange(game, args) {
     //TODO: Implement buff/nerf
-    //debugger;
     for (let value of this.list.entries()) {
       game.resources.get(value[0]).quantity += value[1].n;
+    }
+  }
+  canUnExchange(game, args) {
+    for (let value of this.list.entries()) {
+      if (game.resources.get(value[0]).quantity - value[1].n < game.resources.get(value[0]).min.n) {
+        return false;
+      }
+    }
+    return true;
+  }
+  undoExchange(game, args) {
+    for (let value of this.list.entries()) {
+      let sellPenalty = (value[1].n < 0) ? 0.5: 1.0;
+      game.resources.get(value[0]).quantity -= value[1].n * sellPenalty;
     }
   }
 }

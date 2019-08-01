@@ -2,7 +2,7 @@
   <div id="app">
     <h1>timeTick : {{ timeTick }}</h1>
     <div>
-      <button>Undo</button>
+      <button @click="undo">Undo</button>
       <button @click="pause">Pause</button>
       <button @click="start">Play</button>
     </div>
@@ -86,20 +86,14 @@ export default {
     }
   },
   methods: {
+    undo: function() {
+      this.game.actions.rollbackPreviousAction(this.game);
+    },
     pause: function() {
       this.game.time.pause();
     },
     start: function() {
       this.game.time.start(this.game);
-    },
-    doCatnip: function() {
-      this.game.actions.addActionByName(this.game, "catnip");
-    },
-    doWood: function() {
-      this.game.actions.addActionByName(this.game, "wood");
-    },
-    doField: function() {
-      this.game.actions.addActionByName(this.game, 'field');
     },
     doActive: function(res_name) {
       //debugger;

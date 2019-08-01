@@ -24,13 +24,13 @@ export default class Action {
   }
 
   _validateUndo(game) {
-    return this.exchange.canExchange(game, {});
+    return this.exchange.canUnExchange(game, {});
   }
 
   // TODO: Not up to date
   undo(game) {
     if (this._validateUndo(game)) {
-      this.exchange.doExchange(game, {});
+      this.exchange.undoExchange(game, {});
     }
   }
 };
