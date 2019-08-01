@@ -75,6 +75,7 @@ export class TriggerList {
 
     // Create code
     this.waitingTriggers.set(t.name, t);
+    return true;
   }
 
   check(game) {
@@ -86,11 +87,11 @@ export class TriggerList {
       }
     });
 
-    this.expiredTriggers.forEach(t => {
+    /*this.expiredTriggers.forEach(t => {
       if (t.test(game) && t.type === 'once') {
         rmq.push(t.name);
       }
-    });
+    });*/
 
     if (rmq.length > 0) {
       for (t in rmq) {
@@ -99,4 +100,5 @@ export class TriggerList {
       }
     }
   }
+
 }

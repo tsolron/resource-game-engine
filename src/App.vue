@@ -10,12 +10,15 @@
     <hr>
     <div v-for="feat of this.game.features" v-bind:feat="feat">
       <div v-for="res of feat[1].list" v-bind:res="res" v-bind:game="game">
-        <div>
+        <div v-show="game.resources.get(res).isUnlocked">
           {{feat[0]}} : <b>{{res}}</b> : {{game.resources.get(res).displayQuantity}} |&nbsp;
           <button @click="doActive(res)">{{feat[1].activeName}} {{res}}</button>
         </div>
       </div>
     </div>
+
+    <br><hr><br>
+    <button @click="game.resources.get('field').unlock()">Unlock Field</button>
 
   </div>
 </template>
@@ -26,7 +29,7 @@ import Time from './data/Time.js'
 //import Common from './data/Common.js'
 import {Fn, FnF} from './data/Fn.js'
 import Exchange from './data/Exchange.js'
-//import {TriggerList, TFactory} from './data/Trigger.js'
+import {TriggerList, TFactory} from './data/Trigger.js'
 import {FeatureFactory} from './data/Feature.js'
 import {ResourceFactory} from './data/Resource.js'
 import {ActionFactory, ActionList} from './data/Action.js'
@@ -39,8 +42,9 @@ export default {
   data () {
     //TODO: Move this setup code to a separate initialization method or file
     let game = new Game();
-    game.time = new Time(50);
+    game.time = new Time(200);
     game.actions = new ActionList(10);
+    game.triggers = new TriggerList();
 
     game.features.set('simple', FeatureFactory('simple', true, ['catnip', 'wood'], 'Craft'));
     game.features.set('structure', FeatureFactory('structure', true, ['field'], 'Buy'));
@@ -60,9 +64,10 @@ export default {
     let fieldPassiveX = new Exchange(fieldPassiveXMap);
     let fieldActiveXMap = new Map([['field', FnF(game, '1')], ['catnip', FnF(game, '-10 * (Math.pow(1.2, game.resources.get("field").qty))')]]);
     let fieldActiveX = new Exchange(fieldActiveXMap);
-    game.resources.set('field', ResourceFactory(game, 'field', 0, true, {influencers:[], passive:fieldPassiveX, active:fieldActiveX}));
+    game.resources.set('field', ResourceFactory(game, 'field', 0, false, {influencers:[], passive:fieldPassiveX, active:fieldActiveX}));
 
-
+    let test = TFactory(game, 'onFirstCatnip3', 'once', {condition: 'game.resources.get("catnip").quantity >= 3', action: 'game.resources.get("field").unlock();'});
+    game.triggers.add(test);
 /*
     resources.set('science', ResourceFactory(game, 'science', 0, false, {influencers:['library'], passive:null, active:null, buff:FnF('1+(game.resources["library"]*0.3)')}));
 
@@ -73,7 +78,7 @@ export default {
     let researchFeatures = [];
     features.set('research', FeatureFactory('science', false, researchFeatures));
 
-    let triggerList = new TriggerList();
+
     triggerList.add(TFactory(game, 'onFirstCatnip10', 'once', {condition: 'game.resources.get("catnip").quantity > 10', action: 'game.resources.get("field").unlock();'}));
     triggerList.add(TFactory(game, 'onFirstCatnip50', 'once', {condition: 'game.resources.get("catnip").quantity > 50', action: 'game.resources.get("wood").unlock();'}));
     triggerList.add(TFactory(game, 'onFirstWood10', 'once', {condition: 'game.resources.get("wood").quantity > 10', action: 'game.resources.get("library").unlock();'}));

@@ -19,6 +19,10 @@ export default class Time {
   get tt() { return this.timeTick; }
   get gameLoopInterval() { return 10000 / this.ticksPerTenSeconds; }
 
+  everySecond(game) {
+    game.triggers.check(game);
+  }
+
   //Note: Since this is called within setInterval, "this" refers to Window not Time
   tick(game) {
     if ((!game.time.isPaused) || (game.time.isPaused && game.time.slowTick > 0)) {
@@ -34,6 +38,9 @@ export default class Time {
 
       // User actions (active income)
       game.actions.runNextAction(game);
+
+      // Triggers
+      if (game.time.timeTick % (game.time.ticksPerTenSeconds / 10) == 0) { game.time.everySecond(game); }
     }
   }
 
