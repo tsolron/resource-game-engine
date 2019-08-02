@@ -8,7 +8,7 @@ import {Fn, FnF} from './Fn.js';
  * @property {Boolean} hasCost
  */
 export default class Exchange {
-  constructor(l) {
+  constructor(game, l) {
     this.list = new Map();
 
     for (var i = 0; i < l.length; i++) {

@@ -20,4 +20,5 @@ export default class Game {
   // Shortcuts
   get f() { return this.features; }
   get r() { return this.resources; }
+  get t() { return this.triggers; }
 }

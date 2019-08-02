@@ -46,46 +46,26 @@ export default {
     game.actions = new ActionList(10);
     game.triggers = new TriggerList();
 
-    game.features.set('simple', FeatureFactory('simple', true, ['catnip', 'wood'], 'Craft'));
-    //game.features.set('asimple', FeatureFactory('asimple', true, ['acatnip', 'awood'], 'aCraft'))
-    //game.features.set('structure', FeatureFactory('structure', true, ['field'], 'Buy'));
+    // Note the use of shortcuts (ex. game.r for game.resources). Refer to ./data/Game.js for details
+
+    game.f.set('simple', FeatureFactory('simple', true, ['catnip', 'wood'], 'Craft'));
+    game.features.set('structure', FeatureFactory('structure', true, ['field'], 'Buy'));
 
     // Catnip
-    let catnipActiveX = new Exchange(game, [['catnip', '1']]);
-    game.resources.set('catnip', ResourceFactory(game, 'catnip', 0, true, {influencers:[], passive:null, active:catnipActiveX}));
+    game.r.set('catnip', ResourceFactory(game, 'catnip', 0, true, {}));
+    game.r.get('catnip').active = new Exchange(game, [['catnip', '10']]);
 
     // Wood
-    let woodActiveX = new Exchange(game, [['wood','1'],['catnip','-3']]);
-    game.resources.set('wood', ResourceFactory(game, 'wood', 0, true, {influencers:[], passive:null, active:woodActiveX}));
-
-    // Catnip
-    //game.resources.set('acatnip', ResourceFactory(game, 'acatnip', 0, true, {}));
-    //game.resources.get('acatnip').active = new Exchange(game, [['acatnip', '1']]);
-
-    // Wood
-    //game.resources.set('awood', ResourceFactory(game, 'awood', 0, true, {}));
-    //game.resources.get('awood').active = new Exchange(game, [['awood','1'],['acatnip','-3']]);
-
-    /*
-    // Field
-    let fieldPassiveX = new Exchange(new Map([['catnip', FnF(game, 'game.resources.get("field").qty * 0.125')]]));
-    let fieldActiveX = new Exchange(new Map([['field', FnF(game, '1')], ['catnip', FnF(game, '-10 * (Math.pow(1.2, game.resources.get("field").qty))')]]));
-    game.resources.set('field', ResourceFactory(game, 'field', 0, false, {influencers:[], passive:fieldPassiveX, active:fieldActiveX}));
-
-    // Wood
-    game.resources.set('wood', ResourceFactory(game, 'wood', 0, true, {influencers:[], passive:null, active:null}));
-    game.resources.get('wood').active = new Exchange(new Map([['wood', FnF(game, '1')], ['catnip', FnF(game, '-3')]]));
+    game.r.set('wood', ResourceFactory(game, 'wood', 0, true, {}));
+    game.r.get('wood').active = new Exchange(game, [['wood','1'],['catnip','-3']]);
 
     // Field
-    game.resources.set('field', ResourceFactory(game, 'field', 0, false, {}));
-    game.resources.get('field').passive = new Exchange(new Map([['catnip', FnF(game, 'game.resources.get("field").qty * 0.125')]]));
-    game.resources.get('field').active = new Exchange(new Map([['field', FnF(game, '1')], ['catnip', FnF(game, '-10 * (Math.pow(1.2, game.resources.get("field").qty))')]]));
-    game.resources.get('field').active = new Exchange([['field','1'],['catnip','-10 * (Math.pow(1.2, game.resources.get("field").qty))']]);
-    new Exchange([['field','1'],['catnip','-10 * (Math.pow(1.2, game.resources.get("field").qty))']]);
+    game.r.set('field', ResourceFactory(game, 'field', 0, false, {}));
+    game.r.get('field').passive = new Exchange(game, [['catnip', 'game.r.get("field").qty * 0.125']]);
+    game.r.get('field').active = new Exchange(game, [['field', '1'], ['catnip', '-10 * (Math.pow(1.2, game.r.get("field").qty))']]);
 
-    game.triggers.add(TFactory(game, 'onFirstCatnip3', 'once', {condition: 'game.resources.get("catnip").quantity >= 3', action: 'game.resources.get("field").unlock();'}));
-    game.triggers.add(TFactory(game, 'onFirstWood3', 'once', {condition: 'game.resources.get("wood").quantity >= 3', action: 'game.resources.get("hut").unlock();'}));
-    */
+    game.t.add(TFactory(game, 'onFirstCatnip3', 'once', {condition: 'game.r.get("catnip").quantity >= 3', action: 'game.r.get("field").unlock();'}));
+    game.t.add(TFactory(game, 'onFirstWood3', 'once', {condition: 'game.r.get("wood").quantity >= 3', action: 'game.r.get("hut").unlock();'}));
 
 
 /*

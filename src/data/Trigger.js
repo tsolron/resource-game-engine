@@ -94,9 +94,9 @@ export class TriggerList {
     });*/
 
     if (rmq.length > 0) {
-      for (t in rmq) {
-        this.expiredTriggers.set(t, this.waitingTriggers.get(t));
-        this.waitingTriggers.delete(t);
+      for (const trigger of rmq) {
+        this.expiredTriggers.set(trigger, this.waitingTriggers.get(trigger));
+        this.waitingTriggers.delete(trigger);
       }
     }
   }
