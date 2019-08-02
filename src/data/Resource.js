@@ -12,8 +12,8 @@ import {Exchange} from './Exchange.js';
  * @property {Number} quantity
  * @property {Boolean} isUnlocked
  * @property {Array.<string>} influencers TODO: Need to implement
- * @property {FnF} min
- * @property {FnF} max
+ * @property {Fn} min
+ * @property {Fn} max
  * @property {Exchange} passive
  * @property {Exchange} active
  * @property {Exchange} requirement
@@ -41,7 +41,11 @@ export default class Resource {
     this.numAssigned = 0; // Number of self.quantity assigned to others
   }
 
-  get displayQuantity() { return this.quantity.toFixed(2); }
+  get displayQuantity() {
+    //return this.quantity.toFixed(2);
+    //return parseFloat(Math.round(this.quantity * 100) / 100).toFixed(2);
+    return Number(Math.round(parseFloat(this.quantity + 'e' + 2)) + 'e-' + 2);
+  }
 
   get qty() { return this.quantity; }
   set qty(q) { this.quantity = q; }
