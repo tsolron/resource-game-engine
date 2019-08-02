@@ -9,7 +9,12 @@ import {Fn, FnF} from './Fn.js';
  */
 export default class Exchange {
   constructor(l) {
-    this.list = l;
+    this.list = new Map();
+
+    for (var i = 0; i < l.length; i++) {
+      this.list.set(l[i][0], FnF(game,l[i][1]));
+    }
+
     this.hasCost = true;
   }
 

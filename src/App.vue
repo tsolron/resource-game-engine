@@ -7,7 +7,7 @@
       <button @click="start">Play</button>
     </div>
 
-    <hr>
+    <hr><br>
     <div v-for="feat of this.game.features" v-bind:feat="feat">
       <div v-for="res of feat[1].list" v-bind:res="res" v-bind:game="game">
         <div v-show="game.resources.get(res).isUnlocked">
@@ -18,7 +18,7 @@
     </div>
 
     <br><hr><br>
-    <button @click="game.resources.get('field').unlock()">Unlock Field</button>
+    <!--<button @click="game.resources.get('field').unlock()">Unlock Field</button>-->
 
   </div>
 </template>
@@ -47,27 +47,47 @@ export default {
     game.triggers = new TriggerList();
 
     game.features.set('simple', FeatureFactory('simple', true, ['catnip', 'wood'], 'Craft'));
-    game.features.set('structure', FeatureFactory('structure', true, ['field'], 'Buy'));
+    //game.features.set('asimple', FeatureFactory('asimple', true, ['acatnip', 'awood'], 'aCraft'))
+    //game.features.set('structure', FeatureFactory('structure', true, ['field'], 'Buy'));
 
     // Catnip
-    let catnipActiveXMap = new Map([['catnip', FnF(game, '1')]]);
-    let catnipActiveX = new Exchange(catnipActiveXMap);
+    let catnipActiveX = new Exchange(game, [['catnip', '1']]);
     game.resources.set('catnip', ResourceFactory(game, 'catnip', 0, true, {influencers:[], passive:null, active:catnipActiveX}));
 
     // Wood
-    let woodActiveXMap = new Map([['wood', FnF(game, '1')], ['catnip', FnF(game, '-3')]]);
-    let woodActiveX = new Exchange(woodActiveXMap);
+    let woodActiveX = new Exchange(game, [['wood','1'],['catnip','-3']]);
     game.resources.set('wood', ResourceFactory(game, 'wood', 0, true, {influencers:[], passive:null, active:woodActiveX}));
 
+    // Catnip
+    //game.resources.set('acatnip', ResourceFactory(game, 'acatnip', 0, true, {}));
+    //game.resources.get('acatnip').active = new Exchange(game, [['acatnip', '1']]);
+
+    // Wood
+    //game.resources.set('awood', ResourceFactory(game, 'awood', 0, true, {}));
+    //game.resources.get('awood').active = new Exchange(game, [['awood','1'],['acatnip','-3']]);
+
+    /*
     // Field
-    let fieldPassiveXMap = new Map([['catnip', FnF(game, 'game.resources.get("field").qty * 0.125')]]);
-    let fieldPassiveX = new Exchange(fieldPassiveXMap);
-    let fieldActiveXMap = new Map([['field', FnF(game, '1')], ['catnip', FnF(game, '-10 * (Math.pow(1.2, game.resources.get("field").qty))')]]);
-    let fieldActiveX = new Exchange(fieldActiveXMap);
+    let fieldPassiveX = new Exchange(new Map([['catnip', FnF(game, 'game.resources.get("field").qty * 0.125')]]));
+    let fieldActiveX = new Exchange(new Map([['field', FnF(game, '1')], ['catnip', FnF(game, '-10 * (Math.pow(1.2, game.resources.get("field").qty))')]]));
     game.resources.set('field', ResourceFactory(game, 'field', 0, false, {influencers:[], passive:fieldPassiveX, active:fieldActiveX}));
 
-    let test = TFactory(game, 'onFirstCatnip3', 'once', {condition: 'game.resources.get("catnip").quantity >= 3', action: 'game.resources.get("field").unlock();'});
-    game.triggers.add(test);
+    // Wood
+    game.resources.set('wood', ResourceFactory(game, 'wood', 0, true, {influencers:[], passive:null, active:null}));
+    game.resources.get('wood').active = new Exchange(new Map([['wood', FnF(game, '1')], ['catnip', FnF(game, '-3')]]));
+
+    // Field
+    game.resources.set('field', ResourceFactory(game, 'field', 0, false, {}));
+    game.resources.get('field').passive = new Exchange(new Map([['catnip', FnF(game, 'game.resources.get("field").qty * 0.125')]]));
+    game.resources.get('field').active = new Exchange(new Map([['field', FnF(game, '1')], ['catnip', FnF(game, '-10 * (Math.pow(1.2, game.resources.get("field").qty))')]]));
+    game.resources.get('field').active = new Exchange([['field','1'],['catnip','-10 * (Math.pow(1.2, game.resources.get("field").qty))']]);
+    new Exchange([['field','1'],['catnip','-10 * (Math.pow(1.2, game.resources.get("field").qty))']]);
+
+    game.triggers.add(TFactory(game, 'onFirstCatnip3', 'once', {condition: 'game.resources.get("catnip").quantity >= 3', action: 'game.resources.get("field").unlock();'}));
+    game.triggers.add(TFactory(game, 'onFirstWood3', 'once', {condition: 'game.resources.get("wood").quantity >= 3', action: 'game.resources.get("hut").unlock();'}));
+    */
+
+
 /*
     resources.set('science', ResourceFactory(game, 'science', 0, false, {influencers:['library'], passive:null, active:null, buff:FnF('1+(game.resources["library"]*0.3)')}));
 
@@ -101,14 +121,10 @@ export default {
       this.game.time.start(this.game);
     },
     doActive: function(res_name) {
-      //debugger;
       this.game.actions.addActionByName(this.game, res_name);
     },
   },
   computed: {
-    catnip: function() {
-      return this.game.resources.get('catnip').quantity;
-    },
     timeTick: function() {
       return this.game.time.timeTick;
     },
