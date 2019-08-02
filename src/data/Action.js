@@ -7,9 +7,15 @@
  * @property {Number} exchange
  */
 export default class Action {
-  constructor(t, e) {
+  constructor(t, type, arg) {
     this.timeTick = t;
-    this.exchange = e;
+    this.type = type;
+    if (type === 'resource' || type === 'r') {
+      this.exchange = arg;
+    } else if (type === 'upgrade' || type === 'u') {
+      this.exchange = arg[0];
+      this.action = arg[1];
+    }
   }
 
   _validateDo(game) {
@@ -20,6 +26,9 @@ export default class Action {
     if (this._validateDo(game, {})) {
       this.exchange.once(game, {});
       game.time.recalculateAll(game);
+    }
+    if (!!this.action) {
+      eval(this.action);
     }
   }
 
@@ -40,9 +49,9 @@ export default class Action {
  * @param {Game} game
  * @param {string} f
  */
-export function ActionFactory(game, t, e)
+export function ActionFactory(game, t, type, arg)
 {
-  let act = new Action(t, e);
+  let act = new Action(t, type, arg);
   return act;
 };
 
@@ -86,7 +95,11 @@ export class ActionList {
   }
 
   addActionByName(game, n) {
-    this.addAction(ActionFactory(game, game.time.tt, game.r.get(n).active));
+    this.addAction(ActionFactory(game, game.time.tt, 'resource', game.r.get(n).active));
+  }
+
+  addUActionByName(game, n) {
+    this.addAction(ActionFactory(game, game.time.tt, 'upgrade', [game.upgrades.get(n).active, game.upgrades.get(n).action]));
   }
 
   cancelLastAction() {

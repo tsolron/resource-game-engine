@@ -24,9 +24,9 @@ import {Exchange} from './Exchange.js';
  * @property {Number} numAssigned
  */
 export default class Resource {
-  constructor(game, n, q, u) {
+  constructor(game, n, u) {
     this.name = Number(n);
-    this.quantity = q;
+    this.quantity = 0;
     this.isUnlocked = u;
     this.influencers = [];
     this.min = FnF(game, '0');
@@ -93,9 +93,9 @@ export default class Resource {
  * @return {Resource}
  * @constructor
  */
-export function ResourceFactory(game, n, q, u, args)
+export function ResourceFactory(game, n, u, args)
 {
-  let res = new Resource(game, n, q, u);
+  let res = new Resource(game, n, u);
   if (typeof args['influencers'] !== "undefined") {
     res.influencers = args['influencers'];
   }

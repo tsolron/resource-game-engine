@@ -5,7 +5,8 @@
  * @param {Boolean} u Used to set isUnlocked
  * @property {string} name
  * @property {Boolean} isUnlocked
- * @property {Array.<string>} list Array of 'resource'
+ * @property {Array.<string>} resources Array of 'resource'
+ * @property {Array.<string>} upgrades Array of 'upgrade'
  * @property {Fn} buff
  * @property {Fn} nerf
  */
@@ -13,7 +14,8 @@ export default class Feature {
   constructor(n, u) {
     this.name = n;
     this.isUnlocked = u;
-    this.list = [];
+    this.resources = [];
+    this.upgrades = [];
     this.activeName = '';
     this.buff = null; // Fn
     this.nerf = null; // Fn
@@ -23,18 +25,29 @@ export default class Feature {
     this.isUnlocked = true;
   }
 
-  addResource(n) {
-    if (this.list.includes(n)) {
+  addComponent(t, n) {
+    let where = null;
+    if (t === 'resource' || t === 'r') {
+      where = this.resources;
+    } else if (t === 'upgrade' || t === 'u') {
+      where = this.upgrades;
+    }
+
+    if (where.includes(n)) {
       // Cannot add, already in list
       return false;
     } else {
-      this.list.push(n);
+      where.push(n);
     }
+  }
+
+  addResource(n) {
+    addComponent(n, 'resource');
   }
 
   doPassive(game) {
     //array.forEach(item => console.log(item));
-    this.list.forEach(n => {if (!!game.resources.get(n).passive) {
+    this.resources.forEach(n => {if (!!game.resources.get(n).passive) {
       game.resources.get(n).passive.once(game);
     }});
     /*for (n in this.list) {
@@ -55,8 +68,21 @@ export default class Feature {
 
   recalculateAll(game) {
     this.recalculate(game);
-    for (let n of this.list) {
+    for (let n of this.resources) {
       game.resources.get(n).recalculate(game);
+    }
+    for (let n of this.upgrades) {
+      game.upgrades.get(n).recalculate(game);
+    }
+  }
+
+  unlockAll(game) {
+    this.unlock();
+    for (let n of this.resources) {
+      game.resources.get(n).unlock();
+    }
+    for (let n of this.upgrades) {
+      game.upgrades.get(n).unlock();
     }
   }
 }
@@ -71,7 +97,7 @@ export default class Feature {
 export function FeatureFactory(n, u, l, an)
 {
   let feature = new Feature(n, u);
-  feature.list = l;
+  feature.resources = l;
   feature.activeName = an;
   return feature;
 };

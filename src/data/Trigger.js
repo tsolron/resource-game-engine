@@ -34,14 +34,14 @@ export default class Trigger {
  * @type {function}
  * @param {Game} game
  * @param {string} n Name of Trigger
- * @param {string} t Type ['once', 'alwaysOn']
+ * @param {string} t Type ['once', 'always']
  * @param {Object} args - Options to initialize the component with
  * @param {String} args.condition - This Trigger's condition
  * @param {Boolean} args.action - This Trigger's action
  */
 export function TFactory(game, n, t, args)
 {
-  let tri = new Trigger(n, t);
+  let tri = new Trigger();
   if (typeof args['condition'] !== "undefined") {
     tri.condition = args['condition'];
   }

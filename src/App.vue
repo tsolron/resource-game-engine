@@ -11,7 +11,7 @@
     <hr><br>
 
     <div v-for="feat of this.game.features" v-bind:feat="feat" v-bind:game="game">
-      <div v-for="res of feat[1].list" v-bind:res="res">
+      <div v-for="res of feat[1].resources" v-bind:res="res">
         <div v-show="game.r.get(res).isUnlocked" class="bouter">
           <div class="left"><p class="atext">{{feat[0]}} : <b>{{res}}</b> : {{game.r.get(res).displayQuantity}}<span v-show="(game.r.get(res).max.n < Infinity)"> / {{game.r.get(res).max.n}}</span></p></div>
           <div class="right"><button @click="doActive(res)" class="btn">{{feat[1].activeName}} {{res}}</button></div>
@@ -20,7 +20,10 @@
     </div>
 
     <br><hr><br>
-    <!--<button @click="game.resources.get('field').unlock()">Unlock Field</button>-->
+
+    <button @click="doTest('farming')">Research Farming</button>
+
+    <button @click="doUnlockEverything()">Unlock Everything</button>
 
   </div>
 </template>
@@ -51,6 +54,12 @@ export default {
     },
     doActive: function(res_name) {
       this.game.actions.addActionByName(this.game, res_name);
+    },
+    doTest: function(up_name) {
+      this.game.actions.addUActionByName(this.game, up_name);
+    },
+    doUnlockEverything: function() {
+      this.game.unlockAll();
     },
   },
   computed: {
