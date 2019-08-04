@@ -28,8 +28,9 @@ Note that I am using Kittens Game as a reference for now - I like its complexity
  * Min/Max
    * Ensure they function as desired
      * Can't Exchange below min, but can above max
-   * Is checked upon modification operations
- * Allow Triggers to be set as a % of building cost easily
+   * Is checked upon modification operations4
  * Review ways to increase capacity upon structure built
+ * Vue Components to display a single Feature (& its resources/upgrades)
+ * Identify a means of updating game without ruining saves
 
 # Documentation

@@ -10,20 +10,25 @@ import {FnF} from './Fn.js';
  * @property {Boolean} hasCost
  */
 export default class Exchange {
-  constructor() {
+  constructor(l) {
+    this.creationList = l;
     this.list = new Map();
     this.hasCost = false;
     this.strReplaceFrom = "_rself_";
     this.strReplaceTo = "game.r.get('_name_')";
   }
 
-  setup(name, l) {
+  setup(name, l, mult) {
     for (var i = 0; i < l.length; i++) {
       let clean = this.strReplaceFrom.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
       let regex = new RegExp(clean, 'g');
       let to = this.strReplaceTo.replace(/_name_/g, name);
       let fnStr = l[i][1].replace(regex, to);
-      this.list.set(l[i][0], FnF(fnStr));
+      if (mult !== "1") {
+        this.list.set(l[i][0], FnF(mult.toString() + " * " + fnStr));
+      } else {
+        this.list.set(l[i][0], FnF(fnStr));
+      }
     }
   }
 
@@ -35,10 +40,9 @@ export default class Exchange {
     });
   }
 
-  _canExchange(game, buff, nerf) {
-    //TODO: Incorporation of buff, nerf
+  canExchange(game, buff, nerf) {
     for (let value of this.list.entries()) {
-      let mod = (value[1].n < 0) ? (value[1].mult(nerf)) : (value[1].mult(buff));
+      let mod = value[1].n * (value[1].n < 0) ? (value[1].mult(nerf)) : (value[1].mult(buff));
       if (game.resources.get(value[0]).quantity + mod < game.resources.get(value[0]).min.n) {
         return false;
       }
@@ -47,7 +51,6 @@ export default class Exchange {
   }
 
   doExchange(game, buff, nerf) {
-    //TODO: Implement buff/nerf
     for (let value of this.list.entries()) {
       let mod = (value[1].n < 0) ? (value[1].mult(nerf)) : (value[1].mult(buff));
       game.resources.get(value[0]).add(mod);
@@ -55,11 +58,10 @@ export default class Exchange {
   }
 
   once(game, buff, nerf) {
-    //debugger;
     if (!this.hasCost) {
       this.doExchange(game, buff, nerf);
       return true;
-    } else if (this._canExchange(game, buff, nerf)) {
+    } else if (this.canExchange(game, buff, nerf)) {
         this.doExchange(game, buff, nerf);
         return true;
     } else {
@@ -90,9 +92,9 @@ export default class Exchange {
   }
 }
 
-export function ExchangeFactory(name, l)
+export function ExchangeFactory(name, l, mult)
 {
-  let e = new Exchange();
-  e.setup(name, l);
+  let e = new Exchange(l);
+  e.setup(name, l, mult);
   return e;
 };

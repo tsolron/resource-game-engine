@@ -8,6 +8,7 @@ export class Common {
     // [{name:'mass',quantity:'fun'}]
     this.globalBuff = FnF('10');
     this.globalNerf = FnF('1');
+    this.unlockRatio = 0.3;
   }
 
   /*add(n, v) {

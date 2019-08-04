@@ -1,5 +1,8 @@
 'use strict';
 
+import {ExchangeFactory} from './Exchange.js';
+import {FnF} from './Fn.js';
+
 /**
  * TODO functions
  * @type {class}
@@ -18,16 +21,36 @@ export default class Trigger {
     this.hasTriggered = false;
     this.condition = '';
     this.action = '';
+    this.buildCost = ExchangeFactory('','');
+    this.requirement = ExchangeFactory('','');
+  }
+
+  recalculate(game) {
+    this.buildCost.recalculate(game);
+    this.requirement.recalculate(game);
   }
 
   test(game) {
-    let c = eval(this.condition);
-    if (c) {
-      eval(this.action);
-      this.hasTriggered = true;
-      return true;
+    if (this.condition === "unlockRatio") {
+      //debugger;
+      let bc = this.buildCost.canExchange(game, 1, game.common.globalNerf.n);
+      let req = this.requirement.canExchange(game, 1, 1);
+      if (bc && req) {
+        eval(this.action);
+        this.hasTriggered = true;
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      let c = eval(this.condition);
+      if (c) {
+        eval(this.action);
+        this.hasTriggered = true;
+        return true;
+      }
+      return false;
     }
-    return false;
   }
 }
 
@@ -49,6 +72,18 @@ export function TriggerFactory(n, t, c, a)
   return tri;
 }
 
+export function TriggerFactoryFromRes(game, name, unlockRatio, cList, req)
+{
+  let triName = name + "Unlock";
+  let tri = new Trigger(triName, "once");
+  tri.condition = "unlockRatio";
+  tri.action = "game.r.get('"+name+"').unlock()";
+  tri.buildCost = ExchangeFactory(name, cList, 0.3);
+  //TODO: Ignoring req for now
+  //if (!!req) { tri.requirement = req; }
+  return tri;
+}
+
 /**
  * TODO functions
  * @type {class}
@@ -59,6 +94,12 @@ export class TriggerList {
   constructor() {
     this.waitingTriggers = new Map();
     this.expiredTriggers = new Map();
+  }
+
+  recalculateAll(game) {
+    this.waitingTriggers.forEach(t => {
+      t.recalculate(game);
+    });
   }
 
   add(t) {
@@ -74,6 +115,15 @@ export class TriggerList {
     // Create code
     this.waitingTriggers.set(t.name, t);
     return true;
+  }
+
+  addConditionToTrigger(n, addCond) {
+    if (this.waitingTriggers.has(n)) {
+      let cond = this.waitingTriggers.get(n).condition;
+      cond = "("+cond+") && ("+addCond+")";
+    } else {
+      return false;
+    }
   }
 
   check(game) {
