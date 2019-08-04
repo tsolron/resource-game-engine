@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * TODO functions
  * @type {class}
@@ -11,5 +13,7 @@ export default class Analysis {
 
   // Check if all resources are in features
   // Check if all features' listed resources are actual resources
+  // feature tree uniqueness warning
+  // Feature Tree display
   //
 };

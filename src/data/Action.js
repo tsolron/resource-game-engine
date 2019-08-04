@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * TODO functions
  * @type {class}
@@ -7,40 +9,26 @@
  * @property {Number} exchange
  */
 export default class Action {
-  constructor(t, type, arg) {
-    this.timeTick = t;
+  constructor(tt, type) {
+    this.timeTick = tt;
     this.type = type;
-    if (type === 'resource' || type === 'r') {
-      this.exchange = arg;
-    } else if (type === 'upgrade' || type === 'u') {
-      this.exchange = arg[0];
-      this.action = arg[1];
-    }
-  }
-
-  _validateDo(game) {
-    return this.exchange.canExchange(game, {});
+    this.exchange = null;
+    this.action = null;
   }
 
   do(game) {
-    if (this._validateDo(game, {})) {
-      this.exchange.once(game, {});
-      game.time.recalculateAll(game);
-    }
-    if (!!this.action) {
-      eval(this.action);
+    if (this.exchange.once(game)) {
+      game.recalculateAll(game);
+      if (!!this.action) {
+        eval(this.action);
+      }
     }
   }
 
-  _validateUndo(game) {
-    return this.exchange.canUnExchange(game, {});
-  }
-
-  // TODO: Not up to date
+  // Not current - may not work properly
   undo(game) {
-    if (this._validateUndo(game)) {
-      this.exchange.undoExchange(game, {});
-    }
+    this.exchange.unOnce(game);
+    game.recalculateAll(game);
   }
 };
 
@@ -49,10 +37,25 @@ export default class Action {
  * @param {Game} game
  * @param {string} f
  */
-export function ActionFactory(game, t, type, arg)
+export function ActionFactory(game, tt, type, args)
 {
-  let act = new Action(t, type, arg);
+  let act = new Action(tt, type);
+
+  switch(type) {
+    case "u":
+    case "upgrade":
+      act.exchange = args[0];
+      act.action = args[1];
+      break;
+    case "r":
+    case "resource":
+      act.exchange = args[0];
+      break;
+    default:
+  }
   return act;
+
+  act.recalculate(game);
 };
 
 /**
@@ -94,12 +97,22 @@ export class ActionList {
     this.act_list.push(act);
   }
 
-  addActionByName(game, n) {
-    this.addAction(ActionFactory(game, game.time.tt, 'resource', game.r.get(n).active));
-  }
-
-  addUActionByName(game, n) {
-    this.addAction(ActionFactory(game, game.time.tt, 'upgrade', [game.upgrades.get(n).active, game.upgrades.get(n).action]));
+  addActionByName(game, type, name) {
+    switch(type) {
+      case "u":
+      case "upgrade":
+        if (!!game.u.get(name).active && !!game.u.get(name).action) {
+          this.addAction(ActionFactory(game, game.time.tt, type, [game.u.get(name).active, game.u.get(name).action]));
+        }
+        break;
+      case "r":
+      case "resource":
+        if (!!game.r.get(name).active) {
+          this.addAction(ActionFactory(game, game.time.tt, type, [game.r.get(name).active]));
+        }
+        break;
+      default:
+    }
   }
 
   cancelLastAction() {

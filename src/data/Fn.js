@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * TODO functions
  * @type {class}
@@ -6,7 +8,7 @@
  */
 export default class Fn {
   constructor() {
-    this._f = null;
+    this._f = '1';
     this.n = 1;
   }
 
@@ -24,7 +26,7 @@ export default class Fn {
  * @param {Game} game
  * @param {string} f
  */
-export function FnF(game, f)
+export function FnF(f)
 {
   let fn = new Fn();
   fn.f = f;

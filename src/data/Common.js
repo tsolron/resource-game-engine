@@ -1,3 +1,5 @@
+'use strict';
+
 export default class Common {
   constructor() {
     this._list = new Map();
@@ -15,4 +17,6 @@ export default class Common {
       //TODO: Already exists so display error message
     }
   }
+
+  // Empty Exchange()
 }

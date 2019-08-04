@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * TODO functions
  * @type {class}
@@ -39,15 +41,11 @@ export default class Trigger {
  * @param {String} args.condition - This Trigger's condition
  * @param {Boolean} args.action - This Trigger's action
  */
-export function TFactory(game, n, t, args)
+export function TriggerFactory(n, t, c, a)
 {
-  let tri = new Trigger();
-  if (typeof args['condition'] !== "undefined") {
-    tri.condition = args['condition'];
-  }
-  if (typeof args['action'] !== "undefined") {
-    tri.action = args['action'];
-  }
+  let tri = new Trigger(n, t);
+  tri.condition = c;
+  tri.action = a;
   return tri;
 }
 

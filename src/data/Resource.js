@@ -1,5 +1,7 @@
+'use strict';
+
 import {Fn, FnF} from './Fn.js';
-import {Exchange} from './Exchange.js';
+import {ExchangeFactory} from './Exchange.js';
 
 /**
  * TODO functions
@@ -24,20 +26,19 @@ import {Exchange} from './Exchange.js';
  * @property {Number} numAssigned
  */
 export default class Resource {
-  constructor(game, n, u) {
-    this.name = Number(n);
-    this.quantity = 0;
+  constructor(n, u) {
+    this.name = n;
     this.isUnlocked = u;
-    this.influencers = [];
-    this.min = FnF(game, '0');
-    this.max = FnF(game, 'Infinity');
-    this.passive = null; // Exchange
-    this.active = null; // Exchange
-    this.requirement = null; // Exchange, for self.active, does not modify resources
-    this.buff = null; // Optional Fn, multiplies passive/active gains
-    this.nerf = null; // Optional Fn, multiplies passive/active costs
+    this.quantity = 0;
+    this.min = FnF('0');
+    this.max = FnF('Infinity');
+    this.passive = ExchangeFactory(''); // Exchange
+    this.active = ExchangeFactory(''); // Exchange
+    this.requirement = ExchangeFactory(''); // Exchange, for self.active, does not modify resources
+    this.buff = FnF('1'); // Fn, multiplies passive/active gains
+    this.nerf = FnF('1'); // Fn, multiplies passive/active costs
     this.isAssigned = false; // bool, indicates 'quantity' is from assignment of other resources
-    this.assignedBy = null; // 'resource.name'
+    this.assignedBy = ''; // 'resource.name'
     this.numAssigned = 0; // Number of self.quantity assigned to others
   }
 
@@ -54,20 +55,20 @@ export default class Resource {
     this.isUnlocked = true;
   }
 
-  assign(n, type) {
+  assign(game, type, n) {
     //TODO: Implement 'type' (once, upto, exact, max)
-    let assigner = game.resources[assignedBy];
+    let assigner = game.resources.get(this.assignedBy);
     if (n <= (assigner.quantity - assigner.numAssigned)) {
-      self.quantity += n;
-      assigner.numAssigned += 3;
+      this.quantity += n;
+      assigner.numAssigned += n;
     }
   }
 
-  unassign(n, type) {
+  unassign(game, type, n) {
     //TODO: Implement 'type' (once, upto, exact, max)
-    if (n <= self.quantity) {
-      self.quantity -= n;
-      game.resources[assignedBy].numAssigned -= 3;
+    if (n <= this.quantity) {
+      this.quantity -= n;
+      game.resources.get(assignedBy).numAssigned -= n;
     }
   }
 
@@ -93,23 +94,7 @@ export default class Resource {
  * @return {Resource}
  * @constructor
  */
-export function ResourceFactory(game, n, u, args)
+export function ResourceFactory(n, u)
 {
-  let res = new Resource(game, n, u);
-  if (typeof args['influencers'] !== "undefined") {
-    res.influencers = args['influencers'];
-  }
-  if (typeof args['passive'] !== "undefined") {
-    res.passive = args['passive'];
-  }
-  if (typeof args['active'] !== "undefined") {
-    res.active = args['active'];
-  }
-  if (typeof args['buff'] !== "undefined") {
-    res.buff = args['buff'];
-  }
-  if (typeof args['nerf'] !== "undefined") {
-    res.nerf = args['nerf'];
-  }
-  return res;
+  return new Resource(n, u);
 };

@@ -1,0 +1,65 @@
+{
+  "resources": [
+    {
+      "name": "catnip",
+      "isUnlocked": true,
+      "active": [["catnip","10"]],
+      "min": "0",
+      "max": "5000"
+    },
+    {
+      "name": "wood",
+      "isUnlocked": true,
+      "active": [["wood","1"],["catnip","-3"]],
+      "min": "0",
+      "max": "300"
+    },
+    {
+      "name": "field",
+      "isUnlocked": false,
+      "passive": [["catnip", "game.r.get('field').qty * 0.125"]],
+      "active": [["field", "1"], ["catnip", "-10 * (Math.pow(1.2, game.r.get('field').qty))"]]
+    },
+    {
+      "name": "farmer",
+      "isUnlocked": false
+    }
+  ],
+  "features": [
+    {
+      "name": "simple",
+      "isUnlocked": true,
+      "activeName": "Get",
+      "resources": ["catnip", "wood"]
+    },
+    {
+      "name": "structure",
+      "isUnlocked": true,
+      "activeName": "Build",
+      "resources": ["field"]
+    },
+    {
+      "name": "research",
+      "isUnlocked": false,
+      "activeName": "Research",
+      "resources": ["farmer"]
+    }
+  ],
+  "upgrades": [
+    {
+      "name": "farming",
+      "isUnlocked": true,
+      "type": "once",
+      "active": [["catnip", "-50"]],
+      "action": "game.f.get('research').unlock(); game.r.get('farmer').unlock();"
+    }
+  ],
+  "triggers": [
+    {
+      "name": "onFirstCatnip3",
+      "type": "once",
+      "condition": "game.r.get('catnip').qty > 3",
+      "action": "game.r.get('field').unlock();"
+    }
+  ]
+}

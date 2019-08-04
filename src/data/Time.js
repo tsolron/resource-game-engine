@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * TODO functions
  * @type {class}
@@ -53,11 +55,5 @@ export default class Time {
 
   start(game) {
     this.isPaused = false;
-  }
-
-  recalculateAll(game) {
-    game.features.forEach(f => {
-      f.recalculateAll(game);
-    });
   }
 };

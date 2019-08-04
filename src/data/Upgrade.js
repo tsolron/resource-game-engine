@@ -1,16 +1,18 @@
+'use strict';
+
 import Resource from './Resource.js';
 import Exchange from './Exchange.js'
 
 export default class Upgrade extends Resource
 {
-  constructor (game, n, u, t)
+  constructor (n, u, t)
   {
-    super(game, n, u);
+    super(n, u);
     this.type = t;
     this.action = '';
   }
 }
 
-export function UFactory(game, n, u, t) {
-  return new Upgrade(game, n, u, t);
+export function UpgradeFactory(n, u, t) {
+  return new Upgrade(n, u, t);
 }

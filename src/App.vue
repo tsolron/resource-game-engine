@@ -14,14 +14,14 @@
       <div v-for="res of feat[1].resources" v-bind:res="res">
         <div v-show="game.r.get(res).isUnlocked" class="bouter">
           <div class="left"><p class="atext">{{feat[0]}} : <b>{{res}}</b> : {{game.r.get(res).displayQuantity}}<span v-show="(game.r.get(res).max.n < Infinity)"> / {{game.r.get(res).max.n}}</span></p></div>
-          <div class="right"><button @click="doActive(res)" class="btn">{{feat[1].activeName}} {{res}}</button></div>
+          <div class="right"><button @click="doActive('resource',res)" class="btn">{{feat[1].activeName}} {{res}}</button></div>
         </div>
       </div>
     </div>
 
     <br><hr><br>
 
-    <button @click="doTest('farming')">Research Farming</button>
+    <button @click="doActive('upgrade','farming')">Research Farming</button>
 
     <button @click="doUnlockEverything()">Unlock Everything</button>
 
@@ -30,6 +30,8 @@
 
 
 <script>
+'use strict';
+
 import Game from './data/Game.js'
 
 export default {
@@ -52,11 +54,8 @@ export default {
     start: function() {
       this.game.time.start(this.game);
     },
-    doActive: function(res_name) {
-      this.game.actions.addActionByName(this.game, res_name);
-    },
-    doTest: function(up_name) {
-      this.game.actions.addUActionByName(this.game, up_name);
+    doActive: function(type, name) {
+      this.game.actions.addActionByName(this.game, type, name);
     },
     doUnlockEverything: function() {
       this.game.unlockAll();
@@ -68,9 +67,10 @@ export default {
     },
   },
   created: function() {
-    this.game.buildStructure();
+    //this.game.buildStructure();
+    this.game.buildFromFile();
     this.game.time.start(this.game);
-    this.game.time.recalculateAll(this.game);
+    this.game.recalculateAll(this.game);
     this.game.time.gameLoop = setInterval(this.game.time.tick, (this.game.time.gameLoopInterval), this.game);
   },
 }

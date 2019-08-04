@@ -1,3 +1,7 @@
+'use strict';
+
+import {FnF} from './Fn.js';
+
 /**
  * TODO functions
  * @type {class}
@@ -17,19 +21,19 @@ export default class Feature {
     this.resources = [];
     this.upgrades = [];
     this.activeName = '';
-    this.buff = null; // Fn
-    this.nerf = null; // Fn
+    this.buff = FnF('1'); // Fn
+    this.nerf = FnF('1'); // Fn
   }
 
   unlock() {
     this.isUnlocked = true;
   }
 
-  addComponent(t, n) {
+  addComponent(type, n) {
     let where = null;
-    if (t === 'resource' || t === 'r') {
+    if (type === 'resource' || type === 'r') {
       where = this.resources;
-    } else if (t === 'upgrade' || t === 'u') {
+    } else if (type === 'upgrade' || type === 'u') {
       where = this.upgrades;
     }
 
@@ -42,14 +46,16 @@ export default class Feature {
   }
 
   addResource(n) {
-    addComponent(n, 'resource');
+    addComponent('resource', n);
   }
 
   doPassive(game) {
     //array.forEach(item => console.log(item));
-    this.resources.forEach(n => {if (!!game.resources.get(n).passive) {
-      game.resources.get(n).passive.once(game);
-    }});
+    this.resources.forEach(name => {
+      if (!!game.resources.get(name).passive) {
+        game.resources.get(name).passive.once(game);
+      }
+    });
     /*for (n in this.list) {
       if (game.resources.get(n).passive !== 'undefined') {
         game.resources.get(n).passive.once(game);
@@ -94,10 +100,9 @@ export default class Feature {
  * @param {Array.<string>} l Used to set list
  * @constructor
  */
-export function FeatureFactory(n, u, l, an)
+export function FeatureFactory(n, u, an)
 {
   let feature = new Feature(n, u);
-  feature.resources = l;
   feature.activeName = an;
   return feature;
 };
