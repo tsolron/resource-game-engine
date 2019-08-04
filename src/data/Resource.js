@@ -32,9 +32,10 @@ export default class Resource {
     this.quantity = 0;
     this.min = FnF('0');
     this.max = FnF('Infinity');
-    this.passive = ExchangeFactory(''); // Exchange
-    this.active = ExchangeFactory(''); // Exchange
-    this.requirement = ExchangeFactory(''); // Exchange, for self.active, does not modify resources
+    this.passive = ExchangeFactory('',''); // Exchange
+    this.active = ExchangeFactory('',''); // Exchange
+    this.requirement = ExchangeFactory('',''); // Exchange, for self.active, does not modify resources
+    this.costRatio = 1,
     this.buff = FnF('1'); // Fn, multiplies passive/active gains
     this.nerf = FnF('1'); // Fn, multiplies passive/active costs
     this.isProducer = false; // bool, true means additions to this ignore buff
@@ -63,13 +64,15 @@ export default class Resource {
   }
 
   doPassive(game, buff, nerf) {
-    this.passive.once(game, this.buff.mult(buff), this.nerf.mult(nerf));
+    if (this.isUnlocked) {
+      this.passive.once(game, this.buff.mult(buff), this.nerf.mult(nerf));
+    }
   }
 
   doActive(game, buff, nerf) {
     let doBuff = (this.isProducer) ? (1) : (this.buff.mult(buff));
     this.active.once(game, doBuff, this.nerf.mult(nerf));
-    game.recalculateAll(game);
+    game.dirty = true;
   }
 
   assign(game, type, n) {

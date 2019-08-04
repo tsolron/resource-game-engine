@@ -33,6 +33,9 @@ export default class Time {
       game.time.slowTick--;
       game.time.slowTick = Math.max(game.time.slowTick, 0);
 
+      // Clean game
+      if (game.dirty) { game.recalculateAll(game); }
+
       // Passive incomes
       game.features.forEach(f => {
         f.doPassive(game, game.common.globalBuff.n, game.common.globalNerf.n);

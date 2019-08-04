@@ -13,11 +13,17 @@ export default class Exchange {
   constructor() {
     this.list = new Map();
     this.hasCost = false;
+    this.strReplaceFrom = "_rself_";
+    this.strReplaceTo = "game.r.get('_name_')";
   }
 
-  setup(l) {
+  setup(name, l) {
     for (var i = 0; i < l.length; i++) {
-      this.list.set(l[i][0], FnF(l[i][1]));
+      let clean = this.strReplaceFrom.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+      let regex = new RegExp(clean, 'g');
+      let to = this.strReplaceTo.replace(/_name_/g, name);
+      let fnStr = l[i][1].replace(regex, to);
+      this.list.set(l[i][0], FnF(fnStr));
     }
   }
 
@@ -84,9 +90,9 @@ export default class Exchange {
   }
 }
 
-export function ExchangeFactory(l)
+export function ExchangeFactory(name, l)
 {
   let e = new Exchange();
-  e.setup(l);
+  e.setup(name, l);
   return e;
 };

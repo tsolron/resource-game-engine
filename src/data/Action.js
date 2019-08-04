@@ -20,6 +20,7 @@ export default class Action {
 
   do(game) {
     if (this.exchange.once(game, game.common.globalBuff.n, game.common.globalNerf.n)) {
+      //TODO: Is this needed? Can use game.dirty?
       game.recalculateAll(game);
       if (!!this.action) {
         eval(this.action);

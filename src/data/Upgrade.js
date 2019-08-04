@@ -11,6 +11,13 @@ export default class Upgrade extends Resource
     this.type = t;
     this.action = '';
   }
+
+  doActive(game, buff, nerf) {
+    super.doActive(game, buff, nerf);
+    if (!!this.action) {
+      eval(this.action);
+    }
+  }
 }
 
 export function UpgradeFactory(n, u, t) {

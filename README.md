@@ -29,5 +29,7 @@ Note that I am using Kittens Game as a reference for now - I like its complexity
    * Ensure they function as desired
      * Can't Exchange below min, but can above max
    * Is checked upon modification operations
+ * Allow Triggers to be set as a % of building cost easily
+ * Review ways to increase capacity upon structure built
 
 # Documentation
