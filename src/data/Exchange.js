@@ -1,6 +1,6 @@
 'use strict';
 
-import {Fn, FnF} from './Fn.js';
+import {FnF} from './Fn.js';
 
 /**
  * TODO functions
@@ -29,29 +29,32 @@ export default class Exchange {
     });
   }
 
-  _canExchange(game) {
+  _canExchange(game, buff, nerf) {
     //TODO: Incorporation of buff, nerf
     for (let value of this.list.entries()) {
-      if (game.resources.get(value[0]).quantity + value[1].n < game.resources.get(value[0]).min.n) {
+      let mod = (value[1].n < 0) ? (value[1].mult(nerf)) : (value[1].mult(buff));
+      if (game.resources.get(value[0]).quantity + mod < game.resources.get(value[0]).min.n) {
         return false;
       }
     }
     return true;
   }
 
-  doExchange(game) {
+  doExchange(game, buff, nerf) {
     //TODO: Implement buff/nerf
     for (let value of this.list.entries()) {
-      game.resources.get(value[0]).quantity += value[1].n;
+      let mod = (value[1].n < 0) ? (value[1].mult(nerf)) : (value[1].mult(buff));
+      game.resources.get(value[0]).add(mod);
     }
   }
 
-  once(game) {
+  once(game, buff, nerf) {
+    //debugger;
     if (!this.hasCost) {
-      this.doExchange(game);
+      this.doExchange(game, buff, nerf);
       return true;
-    } else if (this._canExchange(game)) {
-        this.doExchange(game);
+    } else if (this._canExchange(game, buff, nerf)) {
+        this.doExchange(game, buff, nerf);
         return true;
     } else {
       return false;

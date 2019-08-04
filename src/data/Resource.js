@@ -1,6 +1,6 @@
 'use strict';
 
-import {Fn, FnF} from './Fn.js';
+import {FnF} from './Fn.js';
 import {ExchangeFactory} from './Exchange.js';
 
 /**
@@ -37,6 +37,7 @@ export default class Resource {
     this.requirement = ExchangeFactory(''); // Exchange, for self.active, does not modify resources
     this.buff = FnF('1'); // Fn, multiplies passive/active gains
     this.nerf = FnF('1'); // Fn, multiplies passive/active costs
+    this.isProducer = false; // bool, true means additions to this ignore buff
     this.isAssigned = false; // bool, indicates 'quantity' is from assignment of other resources
     this.assignedBy = ''; // 'resource.name'
     this.numAssigned = 0; // Number of self.quantity assigned to others
@@ -53,6 +54,22 @@ export default class Resource {
 
   unlock() {
     this.isUnlocked = true;
+  }
+
+  add(num) {
+    this.quantity += num;
+    this.quantity = Math.min(this.quantity, this.max.n);
+    this.quantity = Math.max(this.quantity, this.min.n);
+  }
+
+  doPassive(game, buff, nerf) {
+    this.passive.once(game, this.buff.mult(buff), this.nerf.mult(nerf));
+  }
+
+  doActive(game, buff, nerf) {
+    let doBuff = (this.isProducer) ? (1) : (this.buff.mult(buff));
+    this.active.once(game, doBuff, this.nerf.mult(nerf));
+    game.recalculateAll(game);
   }
 
   assign(game, type, n) {

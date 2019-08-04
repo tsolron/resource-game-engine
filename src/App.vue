@@ -25,6 +25,8 @@
 
     <button @click="doUnlockEverything()">Unlock Everything</button>
 
+    <button @click="debug()">Debug</button>
+
   </div>
 </template>
 
@@ -55,11 +57,14 @@ export default {
       this.game.time.start(this.game);
     },
     doActive: function(type, name) {
-      this.game.actions.addActionByName(this.game, type, name);
+      this.game.actions.doActiveByOther(this.game, type, name);
     },
     doUnlockEverything: function() {
       this.game.unlockAll();
     },
+    debug: function() {
+      this.game.debug();
+    }
   },
   computed: {
     timeTick: function() {

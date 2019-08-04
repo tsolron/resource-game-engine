@@ -3,22 +3,28 @@
     {
       "name": "catnip",
       "isUnlocked": true,
-      "active": [["catnip","10"]],
+      "active": [["catnip","1"]],
       "min": "0",
       "max": "5000"
     },
     {
       "name": "wood",
       "isUnlocked": true,
-      "active": [["wood","1"],["catnip","-3"]],
+      "active": [["wood","1"],["catnip","-50"]],
       "min": "0",
       "max": "300"
     },
     {
+      "name": "minerals",
+      "isUnlocked": false,
+      "min": "0",
+      "max": "300"
+    },{
       "name": "field",
       "isUnlocked": false,
       "passive": [["catnip", "game.r.get('field').qty * 0.125"]],
-      "active": [["field", "1"], ["catnip", "-10 * (Math.pow(1.2, game.r.get('field').qty))"]]
+      "active": [["field", "1"], ["catnip", "-10 * (Math.pow(1.2, game.r.get('field').qty))"]],
+      "isProducer": true
     },
     {
       "name": "farmer",

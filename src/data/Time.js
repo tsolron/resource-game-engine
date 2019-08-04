@@ -35,7 +35,7 @@ export default class Time {
 
       // Passive incomes
       game.features.forEach(f => {
-        f.doPassive(game);
+        f.doPassive(game, game.common.globalBuff.n, game.common.globalNerf.n);
       });
 
       // User actions (active income)

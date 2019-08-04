@@ -1,5 +1,7 @@
 'use strict';
 
+import {FnF} from './Fn.js';
+
 /**
  * TODO functions
  * @type {class}
@@ -17,7 +19,7 @@ export default class Action {
   }
 
   do(game) {
-    if (this.exchange.once(game)) {
+    if (this.exchange.once(game, game.common.globalBuff.n, game.common.globalNerf.n)) {
       game.recalculateAll(game);
       if (!!this.action) {
         eval(this.action);
@@ -110,6 +112,20 @@ export class ActionList {
         if (!!game.r.get(name).active) {
           this.addAction(ActionFactory(game, game.time.tt, type, [game.r.get(name).active]));
         }
+        break;
+      default:
+    }
+  }
+
+  doActiveByOther(game, type, name) {
+    switch(type) {
+      case "u":
+      case "upgrade":
+        game.u.get(name).doActive(game, game.common.globalBuff.n, game.common.globalNerf.n);
+        break;
+      case "r":
+      case "resource":
+        game.r.get(name).doActive(game, game.common.globalBuff.n, game.common.globalNerf.n);
         break;
       default:
     }

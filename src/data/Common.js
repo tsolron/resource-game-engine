@@ -1,22 +1,26 @@
 'use strict';
 
-export default class Common {
+import {FnF} from './Fn.js';
+
+export class Common {
   constructor() {
-    this._list = new Map();
+    //this._list = new Map();
     // [{name:'mass',quantity:'fun'}]
+    this.globalBuff = FnF('10');
+    this.globalNerf = FnF('1');
   }
 
-  //get gain() { return this._gain; }
-  //set funGain(fg) { this._funGain = fg; }
-
-  add(n, v) {
+  /*add(n, v) {
     if (this._list.get(n) === 'undefined') {
       this._list.set(n, v);
     }
     else {
       //TODO: Already exists so display error message
     }
-  }
+  }*/
 
-  // Empty Exchange()
+  recalculate(game) {
+    this.globalBuff.recalculate(game);
+    this.globalNerf.recalculate(game);
+  }
 }

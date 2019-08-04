@@ -19,6 +19,10 @@ export default class Fn {
     let result = Number(eval(this.f));
     this.n = result;
   }
+
+  mult(other) {
+    return this.n * other;
+  }
 };
 
 /**

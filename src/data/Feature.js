@@ -49,18 +49,13 @@ export default class Feature {
     addComponent('resource', n);
   }
 
-  doPassive(game) {
-    //array.forEach(item => console.log(item));
+  doPassive(game, buff, nerf) {
     this.resources.forEach(name => {
       if (!!game.resources.get(name).passive) {
-        game.resources.get(name).passive.once(game);
+        game.resources.get(name).doPassive(game, this.buff.mult(buff), this.nerf.mult(nerf));
+        //game.resources.get(name).passive.once(game);
       }
     });
-    /*for (n in this.list) {
-      if (game.resources.get(n).passive !== 'undefined') {
-        game.resources.get(n).passive.once(game);
-      }
-    }*/
   }
 
   recalculate(game) {

@@ -9,6 +9,7 @@ import {ExchangeFactory} from './Exchange.js';
 import {FnF} from './Fn.js';
 import {TriggerFactory, TriggerList} from './Trigger.js';
 import {UpgradeFactory} from './Upgrade.js';
+import {Common} from './Common.js';
 
 /**
  * This class contains all game data.
@@ -24,7 +25,7 @@ export default class Game {
   constructor() {
     this.featureTree = FeatureTree;
     this.time = new Time(200);
-    this.common = null;
+    this.common = new Common();
     this.triggers = new TriggerList();
     this.actions = new ActionList(10);
     this.features = new Map();
@@ -235,6 +236,7 @@ export default class Game {
       if (!!resource.max) { this.r.get(resource.name).max.f = resource.max; }
       if (!!resource.buff) { this.r.get(resource.name).buff = new FnF(this, resource.buff); }
       if (!!resource.nerf) { this.r.get(resource.name).nerf = new FnF(this, resource.nerf); }
+      if (!!resource.isProducer) { this.r.get(resource.name).isProducer = resource.isProducer; }
     }
 
     // Create Upgrades from file
@@ -269,6 +271,7 @@ export default class Game {
   }
 
   recalculateAll() {
+    this.common.recalculate(this);
     this.resources.forEach(r => {
       r.recalculate(this);
     });
@@ -284,5 +287,9 @@ export default class Game {
     this.features.forEach(f => {
       f.unlockAll(this);
     });
+  }
+
+  debug() {
+    debugger;
   }
 }
