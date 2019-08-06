@@ -8,16 +8,51 @@
       <button @click="start">Play</button>
     </div>
 
-    <hr><br>
+    <br><hr><br>
+    <div v-for="feat of this.game.features" v-bind:feat="feat" v-bind:game="game" style="display:inline-block">
+      &nbsp;|&nbsp;<button @click="activateFeature(feat)" class="btn">Feature: {{feat[1].name}}</button>
+    </div>
+    <br><br><hr><br>
 
-    <div v-for="feat of this.game.features" v-bind:feat="feat" v-bind:game="game">
+    <template v-if="!!activeFeat">
+      {{activeFeat[0]}}
+      <br><br>
+      <div v-for="res of activeFeat[1].resources">
+        {{res}}
+      </div>
+      <!-- <div v-for="res of activeFeat[1].resources" v-bind:res="res">
+        <div v-show="game.r.get(res).isUnlocked" class="bouter">
+          <div class="left"><p class="atext">{{activeFeat}} : <b>{{res}}</b> : {{game.r.get(res).displayQuantity}}<span v-show="(game.r.get(res).max.n < Infinity)"> / {{game.r.get(res).max.n}}</span></p></div>
+          <div class="right"><button @click="doActive('resource',res)" class="btn">{{feat[1].activeName}} {{res}}</button></div>
+        </div>
+      </div> -->
+    </template>
+    <!-- <template v-else>
+      <div v-for="feat of this.game.features" v-bind:feat="feat" v-bind:game="game">
+        <div v-for="res of feat[1].resources" v-bind:res="res">
+          <div v-show="game.r.get(res).isUnlocked" class="bouter">
+            <div class="left"><p class="atext">{{feat[0]}} : <b>{{res}}</b> : {{game.r.get(res).displayQuantity}}<span v-show="(game.r.get(res).max.n < Infinity)"> / {{game.r.get(res).max.n}}</span></p></div>
+            <div class="right"><button @click="doActive('resource',res)" class="btn">{{feat[1].activeName}} {{res}}</button></div>
+          </div>
+        </div>
+      </div>
+    </template> -->
+
+    <!-- <div v-for="res of activeFeat.resources" v-bind:res="res">
+      <div v-show="game.r.get(res).isUnlocked" class="bouter">
+        <div class="left"><p class="atext">{{feat[0]}} : <b>{{res}}</b> : {{game.r.get(res).displayQuantity}}<span v-show="(game.r.get(res).max.n < Infinity)"> / {{game.r.get(res).max.n}}</span></p></div>
+        <div class="right"><button @click="doActive('resource',res)" class="btn">{{feat[1].activeName}} {{res}}</button></div>
+      </div>
+    </div> -->
+
+    <!-- <div v-for="feat of this.game.features" v-bind:feat="feat" v-bind:game="game">
       <div v-for="res of feat[1].resources" v-bind:res="res">
         <div v-show="game.r.get(res).isUnlocked" class="bouter">
           <div class="left"><p class="atext">{{feat[0]}} : <b>{{res}}</b> : {{game.r.get(res).displayQuantity}}<span v-show="(game.r.get(res).max.n < Infinity)"> / {{game.r.get(res).max.n}}</span></p></div>
           <div class="right"><button @click="doActive('resource',res)" class="btn">{{feat[1].activeName}} {{res}}</button></div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <br><hr><br>
 
@@ -44,6 +79,7 @@ export default {
   data () {
     return {
       game: new Game(),
+      activeFeat: null
     }
   },
   methods: {
@@ -61,6 +97,9 @@ export default {
     },
     doUnlockEverything: function() {
       this.game.unlockAll();
+    },
+    activateFeature: function(feat) {
+      this.activeFeat = feat;
     },
     debug: function() {
       this.game.debug();
